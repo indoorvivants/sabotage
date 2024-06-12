@@ -1,6 +1,8 @@
 import com.indoorvivants.detective.Platform
+import bindgen.interface.Binding
+import bindgen.plugin.BindgenMode
 
-lazy val BINARY_NAME = "sn-test"
+lazy val BINARY_NAME = "sabotage"
 lazy val common = Seq(
   scalaVersion := "3.5.0-RC1"
 )
@@ -15,9 +17,48 @@ lazy val lib =
 
 lazy val bin = project
   .in(file("mod/bin"))
-  .enablePlugins(ScalaNativePlugin)
+  .enablePlugins(ScalaNativePlugin, BindgenPlugin, VcpkgNativePlugin)
   .dependsOn(lib)
   .settings(common)
+  .settings(
+    vcpkgDependencies := VcpkgDependencies("curl"),
+    vcpkgNativeConfig ~= { _.addRenamedLibrary("curl", "libcurl") },
+    bindgenBindings += {
+      Binding(
+        vcpkgConfigurator.value.includes("curl") / "curl" / "curl.h",
+        "curl"
+      )
+        .withCImports(
+          List("curl/curl.h")
+        )
+        .withMultiFile(true)
+    },
+    nativeConfig := {
+      val conf = nativeConfig.value
+      val arch64 =
+        if (
+          Platform.arch == Platform.Arch.Arm && Platform.bits == Platform.Bits.x64
+        )
+          List("-arch", "arm64")
+        else Nil
+
+      conf
+        .withLinkingOptions(
+          conf.linkingOptions ++ arch64
+        )
+        .withCompileOptions(
+          conf.compileOptions ++ arch64
+        )
+        .withIncrementalCompilation(true)
+    },
+    bindgenMode := BindgenMode.Manual(
+      scalaDir = (Compile / sourceDirectory).value / "scala" / "generated",
+      cDir = (Compile / resourceDirectory).value / "scala-native" / "generated"
+    ),
+    bindgenBindings := {
+      bindgenBindings.value.map(_.withNoLocation(true))
+    }
+  )
 
 lazy val buildDebugBinary = taskKey[File]("")
 buildDebugBinary := {
