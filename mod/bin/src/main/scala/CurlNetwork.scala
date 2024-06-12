@@ -37,6 +37,7 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
 
       val res = curl_easy_perform(inst)
       assert(res == CURLcode.CURLE_OK, "Expected request to succeed")
+      stdio.fclose(fp)
 
 end CurlNetwork
 
