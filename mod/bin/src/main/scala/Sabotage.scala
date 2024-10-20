@@ -8,6 +8,7 @@ import scala.util.Try
 import scala.sys.process.ProcessLogger
 import java.io.FileReader
 import scala.util.Using
+import sabotage.DownloadJvmIndex
 
 /** TODO:
   *   - Fetch JAR
@@ -36,7 +37,6 @@ val logStderr = new Logger:
     Context(config = Config(), env = env, logger = logStderr)
 
   given Files with
-
     override def contents(path: Path): String =
       io.Source
         .fromFile(path.toFile())
@@ -48,6 +48,8 @@ val logStderr = new Logger:
     override def move(from: Path, to: Path): Unit =
       java.nio.file.Files.move(from, to)
     override def removeFile(path: Path): Unit = java.nio.file.Files.delete(path)
+    override def pwd: Path = Paths.get(System.getProperty("user.dir"))
+    override def resolve(path: String): Path = Paths.get(path)
   end given
 
   given Proc with
@@ -57,7 +59,36 @@ val logStderr = new Logger:
       process(args*).stdout.mkString(System.lineSeparator())
 
   CurlNetwork.use:
-    try println(DownloadSbtJar.acquireSbtJar("1.7.0"))
+    try
+      val propertiesLocation = getFiles.pwd.resolve("project/build.properties")
+
+      val properties =
+        BuildProperties.read(getFiles.contents(propertiesLocation))
+
+      val target = Platform.target
+
+      val jarLocation = DownloadSbtJar.acquireSbtJar(properties.sbtVersion)
+
+      val jdkHome = properties.jdk match
+        case None => getFiles.resolve(getEnv.variables("JAVA_HOME"))
+        case Some(jdkSpec) =>
+          val index = DownloadJvmIndex.acquireJvmIndex(
+            properties.jdkIndex.getOrElse("coursier")
+          )
+
+          val (vendor, versionSpec) = jdkSpec match
+            case s"$vendor:$version" => (vendor, version)
+            case other               => ("adoptium", other)
+
+          val versionKey = versionSpec match
+            case s"1.$ver" => versionSpec
+            case other     => s"1.$other"
+
+          val vendorKey = s"jdk@$vendor"
+
+          val spec = index.drillDown(target)(vendorKey)
+
+          println(spec(versionKey))
     catch
       case n: NetworkError => println(n)
       case other           => println(other)

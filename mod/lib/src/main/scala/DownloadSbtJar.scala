@@ -48,8 +48,6 @@ object DownloadSbtJar:
       end if
 
       getFiles.move(tempLocation, downloadLocation)
-
-      getFiles.removeFile(tempLocation)
       getFiles.removeFile(shaLocation)
 
       downloadLocation

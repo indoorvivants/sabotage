@@ -4,7 +4,7 @@ import bindgen.plugin.BindgenMode
 
 lazy val BINARY_NAME = "sabotage"
 lazy val common = Seq(
-  scalaVersion := "3.5.0-RC1"
+  scalaVersion := "3.5.2"
 )
 
 lazy val root = project.in(file(".")).aggregate(lib, bin)
@@ -14,6 +14,7 @@ lazy val lib =
     .in(file("mod/lib"))
     .enablePlugins(ScalaNativePlugin)
     .settings(common)
+    .settings(libraryDependencies += "com.lihaoyi" %%% "upickle" % "4.0.2")
 
 lazy val bin = project
   .in(file("mod/bin"))

@@ -41,3 +41,5 @@ trait Files:
   def move(from: Path, to: Path): Unit
   def removeFile(path: Path): Unit
   def contents(path: Path): String
+  def pwd: Path
+  def resolve(path: String): Path
