@@ -76,19 +76,8 @@ val logStderr = new Logger:
             properties.jdkIndex.getOrElse("coursier")
           )
 
-          val (vendor, versionSpec) = jdkSpec match
-            case s"$vendor:$version" => (vendor, version)
-            case other               => ("adoptium", other)
+          val downloadUrl = properties.jdkUrl(index, target)
 
-          val versionKey = versionSpec match
-            case s"1.$ver" => versionSpec
-            case other     => s"1.$other"
-
-          val vendorKey = s"jdk@$vendor"
-
-          val spec = index.drillDown(target)(vendorKey)
-
-          println(spec(versionKey))
     catch
       case n: NetworkError => println(n)
       case other           => println(other)
