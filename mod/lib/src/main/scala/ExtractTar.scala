@@ -30,7 +30,7 @@ object ExtractTar:
           read += n
           val bytes = tarStream.readNBytes(n)
           if bytes.length != n then boundary.break()
-          else new String(bytes.takeWhile(_ != 0))
+          else new String(bytes.takeWhile(_ != 0)).trim()
         val name = ascii(100)
         if name == "" then boundary.break()
         val mode = ascii(8)
