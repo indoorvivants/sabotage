@@ -4,7 +4,7 @@ import bindgen.plugin.BindgenMode
 
 lazy val BINARY_NAME = "sabotage"
 lazy val common = Seq(
-  scalaVersion := "3.5.2"
+  scalaVersion := "3.5.1"
 )
 
 lazy val root = project.in(file(".")).aggregate(lib, bin)

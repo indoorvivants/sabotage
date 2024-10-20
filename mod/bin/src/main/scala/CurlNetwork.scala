@@ -14,9 +14,12 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
     Zone:
       val cPath = toCString(path.toAbsolutePath().toString())
       val cUrl = toCString(url)
-      curl_easy_setopt(inst, CURLoption.CURLOPT_URL, cUrl)
+      check(curl_easy_setopt(inst, CURLoption.CURLOPT_URL, cUrl))
+      check(curl_easy_setopt(inst, CURLoption.CURLOPT_FOLLOWLOCATION, 1L))
 
       val fp = stdio.fopen(cPath, c"wb")
+
+      assert(fp != null, s"Failed to open path ${fromCString(cPath)} for writing")
 
       val write_data_callback = CFuncPtr4.fromScalaFunction {
         (
@@ -28,15 +31,15 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
           stdio.fwrite(ptr, size, nmemb, userdata)
       }
 
-      curl_easy_setopt(
+      check(curl_easy_setopt(
         inst,
         CURLoption.CURLOPT_WRITEFUNCTION,
         write_data_callback
-      )
-      curl_easy_setopt(inst, CURLoption.CURLOPT_WRITEDATA, fp)
+      ))
 
-      val res = curl_easy_perform(inst)
-      assert(res == CURLcode.CURLE_OK, "Expected request to succeed")
+      check(curl_easy_setopt(inst, CURLoption.CURLOPT_WRITEDATA, fp))
+      check(curl_easy_perform(inst))
+
       stdio.fclose(fp)
 
 end CurlNetwork

@@ -53,4 +53,7 @@ CLI ARGUMENTS:
 TODO for sexy:
 
 [ ] Bootstrap JDK version from build.properties
+    [x] download and read JVM INDEX
+    [x] Download JDK
+    [ ] Extract JDK: https://github.com/scala-native/scala-native/issues/4071
 [ ] Embed sbtn into the sabotage

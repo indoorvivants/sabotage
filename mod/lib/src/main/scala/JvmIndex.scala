@@ -5,7 +5,11 @@ import upickle.default
 import Platform.*
 
 case class JvmIndex(data: JvmIndex.Data):
-  def drillDown(target: Target) =
+  def url(
+      target: Target,
+      vendor: JvmIndex.Vendor,
+      version: JvmIndex.Version
+  ): Option[String] =
     val osKey = target.os match
       case OS.MacOS   => "darwin"
       case OS.Linux   => "linux"
@@ -16,7 +20,15 @@ case class JvmIndex(data: JvmIndex.Data):
       case (Arch.Intel, Bits.x64) => "amd64"
       case (Arch.Arm, Bits.x64)   => "arm64"
 
-    data(osKey)(archKey)
+    for
+      os <- data.get(osKey)
+      arch <- os.get(archKey)
+      vendor <- arch.get(vendor)
+      url <- vendor.get(version)
+    yield url
+
+    // data.get(osKey).flatMap(_.get(archKey))
+  end url
 end JvmIndex
 
 object JvmIndex:

@@ -76,7 +76,15 @@ val logStderr = new Logger:
             properties.jdkIndex.getOrElse("coursier")
           )
 
-          val downloadUrl = properties.jdkUrl(index, target)
+          val downloadUrl = properties
+            .jdkUrl(jdkSpec, index, target)
+            .getOrElse(sys.error(s"no JDK url found matching $jdkSpec"))
+
+        // println(downloadUrl)
+
+          DownloadJdk.download(downloadUrl)
+
+        // DownloadJdk.
 
     catch
       case n: NetworkError => println(n)

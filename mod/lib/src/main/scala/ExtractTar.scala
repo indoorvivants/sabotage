@@ -3,24 +3,24 @@ package sabotage.lib
 import java.io.*
 import java.nio.file.*
 import scala.util.boundary
+import language.experimental.saferExceptions
 
 object ExtractTar:
-  def extract(tarStream: InputStream, out: Path) =
+  def extract(tarStream: InputStream, out: Path)(using Context) =
 
     def transferN(is: InputStream, n: Int, os: OutputStream) =
       val buffer = Array.ofDim[Byte](1024)
       var read = -1
       var transferred = 0
-      while ({
+      while {
         read = is.read(buffer, 0, (n - transferred).min(1024)); read > 0
-      })
+      }
       do
         os.write(buffer, 0, read)
         transferred += read
 
       transferred
-
-    val out = Paths.get("./out")
+    end transferN
 
     boundary:
       var fos = Option.empty[FileOutputStream]
@@ -44,13 +44,12 @@ object ExtractTar:
         val ustarIndicator = ascii(6)
         val headerRemaining = 512 - read
         val isDir = linkOrType == "5"
-        println(s"'$name' -- $sizeStr -- $linkOrType")
 
         val size = Integer.parseInt(sizeStr, 8)
 
         val destination = out.resolve(name)
 
-        val skipped = tarStream.skipNBytes(headerRemaining)
+        val skipped = tarStream.skip(headerRemaining)
 
         val padding = if size % 512 == 0 then 0 else (512 - (size % 512))
 
@@ -62,7 +61,11 @@ object ExtractTar:
           transferN(tarStream, size, fos)
           fos.close()
 
-          tarStream.skipNBytes(padding)
+          tarStream.skip(padding)
+
+        getLogger.info(s"Extracted [$name]")
+      end readObject
 
       while true do readObject()
+  end extract
 end ExtractTar
