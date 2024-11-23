@@ -33,7 +33,8 @@ object ExtractTar:
         var actually = in.read(bytes, 0, n)
         while actually < n do
           val read = in.read(bytes, actually, n - actually)
-          if read == -1 then boundary.break(Result.Err("end of stream unexpectedly"))
+          if read == -1 then
+            boundary.break(Result.Err("end of stream unexpectedly"))
           else actually += read
         bytes
 
@@ -79,13 +80,24 @@ object ExtractTar:
           transferN(tarStream, size, fos)
           fos.close()
 
-          tarStream.skip(padding)
+          chmod(destination, Integer.parseInt(mode))
 
-        getLogger.info(s"Extracted [$name]")
+          tarStream.skip(padding)
+        end if
+
       end readObject
 
       while true do readObject()
 
       Result.Ok
   end extract
+
+  private def chmod(path: Path, perms: Int) =
+    import scalanative.posix.sys.stat.chmod as libc_chmod
+    import scalanative.posix.sys.types.mode_t
+    import scalanative.*, unsigned.*, unsafe.*
+
+    val p: mode_t = perms.toUInt
+    Zone:
+      libc_chmod(toCString(path.toString()), p)
 end ExtractTar

@@ -26,7 +26,8 @@ object DownloadJdk:
         if isTgz then
           PatchedGZIPInputStream(FileInputStream(archivePath.toFile))
         else FileInputStream(archivePath.toFile)
-
+      
+      getLogger.info(s"Extracting $archivePath into $extractedPath")
       ExtractTar.extract(is, extractedPath)
       extractedPath
 
