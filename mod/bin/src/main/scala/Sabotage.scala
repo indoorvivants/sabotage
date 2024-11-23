@@ -82,13 +82,13 @@ val logStderr = new Logger:
 
         // println(downloadUrl)
 
-          DownloadJdk.download(downloadUrl)
+          println(DownloadJdk.download(downloadUrl))
 
         // DownloadJdk.
 
     catch
-      case n: NetworkError => println(n)
-      case other           => println(other)
+      case n: NetworkError => println(n.toString())
+      case other           => throw other
 end hello
 
 def process(cmd: String*) =

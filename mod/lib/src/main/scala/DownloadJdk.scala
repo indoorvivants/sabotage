@@ -21,17 +21,17 @@ object DownloadJdk:
     val extractedPath =
       getEnv.userHome.resolve(s".cache/sabotage/jdk/$downloadPath")
 
-    def extract() = 
+    def extract() =
       val is =
-        if isTgz then GZIPInputStream(FileInputStream(archivePath.toFile))
+        if isTgz then
+          PatchedGZIPInputStream(FileInputStream(archivePath.toFile))
         else FileInputStream(archivePath.toFile)
 
       ExtractTar.extract(is, extractedPath)
       extractedPath
 
     if getFiles.isDir(extractedPath) then extractedPath
-    else if getFiles.isFile(archivePath) then
-      extract()
+    else if getFiles.isFile(archivePath) then extract()
     else
       getLogger.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
       java.nio.file.Files.createDirectories(archivePath.getParent())
