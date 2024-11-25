@@ -3,18 +3,18 @@
 
 TODO for feature parity:
 
-[ ] Download SBT jar
-[ ] Download sbtn 
-[ ] Replicate java args behaviour
-[ ] Detect "preloaded" directory
-[ ] Check for installed Java
-[ ] Copy java-rt jar? why?
-[ ] Stuff around cygwin
-[ ] Pick up ./.sbtopts
-[ ] Pick up /etc/sbt/sbtopts
-[ ] Pick up .jvmopts
-[ ] Handle SBT_OPTS
-[ ] Handle JAVA_OPTS
+- [ ] Download SBT jar
+- [ ] Download sbtn 
+- [ ] Replicate java args behaviour
+- [ ] Detect "preloaded" directory
+- [ ] Check for installed Java
+- [ ] Copy java-rt jar? why?
+- [ ] Stuff around cygwin
+- [ ] Pick up ./.sbtopts
+- [ ] Pick up /etc/sbt/sbtopts
+- [ ] Pick up .jvmopts
+- [ ] Handle SBT_OPTS
+- [ ] Handle JAVA_OPTS
 
 CLI ARGUMENTS:
 
@@ -52,8 +52,8 @@ CLI ARGUMENTS:
 
 TODO for sexy:
 
-[ ] Bootstrap JDK version from build.properties
-    [x] download and read JVM INDEX
-    [x] Download JDK
-    [ ] Extract JDK: https://github.com/scala-native/scala-native/issues/4071
-[ ] Embed sbtn into the sabotage
+- [ ] Bootstrap JDK version from build.properties
+  - [x] download and read JVM INDEX
+  - [x] Download JDK
+  - [ ] Extract JDK: https://github.com/scala-native/scala-native/issues/4071
+- [ ] Embed sbtn into the sabotage
