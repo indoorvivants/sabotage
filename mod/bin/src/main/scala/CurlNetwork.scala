@@ -10,8 +10,9 @@ import scalanative.libc.*
 import language.experimental.saferExceptions
 
 class CurlNetwork private (inst: Ptr[CURL]) extends Network:
-  override def downloadFile(url: String, path: Path): Unit throws NetworkError =
+  override def downloadFile(url: String, path: Path)(using Logger): Unit throws NetworkError =
     Zone:
+      getLogger.info(s"Downloading [$url] to [$path]")
       val cPath = toCString(path.toAbsolutePath().toString())
       val cUrl = toCString(url)
       check(curl_easy_setopt(inst, CURLoption.CURLOPT_URL, cUrl))

@@ -16,68 +16,64 @@
 
 package sabotage.lib
 
-object Platform {
+object Platform:
   sealed abstract class OS(val string: String)
       extends Product
-      with Serializable {
-    import OS._
-    def coursierString: String = this match {
+      with Serializable:
+    import OS.*
+    def coursierString: String = this match
       case Windows => "pc-win32"
       case MacOS   => "apple-darwin"
       case Linux   => "pc-linux"
       case Unknown => "unknown"
-    }
-  }
-  object OS {
+  object OS:
     case object Windows extends OS("windows")
     case object MacOS extends OS("osx")
     case object Linux extends OS("linux")
     case object Unknown extends OS("unknown")
 
     val all = List(Windows, MacOS, Linux, Unknown)
-    def detect(osNameProp: String): OS = normalise(osNameProp) match {
+    def detect(osNameProp: String): OS = normalise(osNameProp) match
       case p if p.startsWith("linux")                         => OS.Linux
       case p if p.startsWith("windows")                       => OS.Windows
       case p if p.startsWith("osx") || p.startsWith("macosx") => OS.MacOS
       case _                                                  => OS.Unknown
-    }
     def fromProps(props: Map[String, String]): OS =
       detect(props.getOrElse("os.name", ""))
-  }
+  end OS
 
   sealed abstract class Arch extends Product with Serializable
-  object Arch {
+  object Arch:
     case object Intel extends Arch {}
     case object Arm extends Arch {}
 
     val all = List(Intel, Arm)
-    def detect(osArchProp: String): Arch = normalise(osArchProp) match {
+    def detect(osArchProp: String): Arch = normalise(osArchProp) match
       case "amd64" | "x64" | "x8664" | "x86" => Intel
       case "aarch64" | "arm64"               => Arm
-    }
 
     def fromProps(props: Map[String, String]): Arch =
       detect(props.getOrElse("os.arch", ""))
-  }
+  end Arch
 
   sealed abstract class Bits extends Product with Serializable
-  object Bits {
+  object Bits:
     case object x32 extends Bits
     case object x64 extends Bits
 
     def detect(sunArchProp: String) =
-      sunArchProp match {
+      sunArchProp match
         case "64" => x64
         case "32" => x32
-      }
 
     def fromProps(props: Map[String, String]): Bits =
       detect(props.getOrElse("sun.arch.data.model", "64"))
-  }
+  end Bits
 
   case class Target(os: OS, arch: Arch, bits: Bits)
 
-  private lazy val propsMap = sys.props.toMap
+  private lazy val propsMap = sys.props.toMap.collect:
+    case (k, v: String) => (k, v)
 
   lazy val os = OS.fromProps(propsMap)
   lazy val arch = Arch.fromProps(propsMap)
@@ -86,4 +82,4 @@ object Platform {
 
   private def normalise(s: String) =
     s.toLowerCase.replaceAll("[^a-z0-9]+", "")
-}
+end Platform

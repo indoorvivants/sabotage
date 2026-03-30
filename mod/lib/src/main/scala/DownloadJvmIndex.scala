@@ -11,14 +11,15 @@ object DownloadJvmIndex:
 
   def acquireJvmIndex(
       jvmIndex: String
-  )(using Network, Files, Context): JvmIndex throws NetworkError =
+  )(using Network, Files, Logger, Env): JvmIndex throws NetworkError =
     val url = indexUrl(jvmIndex)
     val downloadLocation =
       getEnv.userHome.resolve(s".cache/sabotage/jvm-index/$jvmIndex.json")
 
     java.nio.file.Files.createDirectories(downloadLocation.getParent())
     if !getFiles.isFile(downloadLocation)
-    then // TODO: cache refresh? force no cache?
+    then
+      IMPROVE("Handle caching somehow")
       getLogger.info(
         s"Downloading JVM index [$jvmIndex] from [$url] into [$downloadLocation]"
       )

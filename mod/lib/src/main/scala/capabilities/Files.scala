@@ -2,7 +2,6 @@ package sabotage.lib
 
 import java.nio.file.Path
 import scala.util.Try
-import language.experimental.saferExceptions
 
 trait Files:
   def isDir(path: Path): Boolean
@@ -12,3 +11,4 @@ trait Files:
   def contents(path: Path): String
   def pwd: Path
   def resolve(path: String): Path
+  def list(path: Path): List[Path]

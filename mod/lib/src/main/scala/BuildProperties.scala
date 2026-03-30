@@ -29,7 +29,7 @@ case class BuildProperties(
 end BuildProperties
 
 object BuildProperties:
-  def read(contents: String)(using Context) =
+  def read(contents: String) =
     import java.util.Properties
 
     val prop = new Properties()

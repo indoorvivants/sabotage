@@ -6,7 +6,7 @@ import java.nio.file.Path
 import language.experimental.saferExceptions
 
 object DownloadSbtJar:
-  def jarUrl(launcherVersion: String)(using Context): String =
+  def jarUrl(launcherVersion: String)(using Logger, Network, Env): String =
     val repoBase = getEnv.variables
       .get("SBT_LAUNCH_REPO")
       .map(_.trim)
@@ -16,7 +16,14 @@ object DownloadSbtJar:
 
   def acquireSbtJar(
       launcherVersion: String
-  )(using Context, Network, Files, Proc): Path throws (NetworkError) =
+  )(using
+      Context,
+      Network,
+      Files,
+      Proc,
+      Logger,
+      Env
+  ): Path throws (NetworkError) =
     val jar = jarUrl(launcherVersion)
     val sha = jar + ".sha1"
     val downloadLocation =
@@ -36,6 +43,7 @@ object DownloadSbtJar:
       getNetwork.downloadFile(jar, tempLocation)
       getNetwork.downloadFile(sha, shaLocation)
 
+      IMPROVE("Avoid shelling out to shasum")
       if getProc.cmdOk(Seq("shasum", "-v")) then
         val out =
           getProc.cmdOutput(Seq("shasum", tempLocation.toString())).trim()

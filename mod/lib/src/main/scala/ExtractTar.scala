@@ -10,7 +10,7 @@ object ExtractTar:
     case Ok
     case Err(msg: String)
 
-  def extract(tarStream: InputStream, out: Path)(using Context): Result =
+  def extract(tarStream: InputStream, out: Path): Result =
 
     def transferN(is: InputStream, n: Int, outputStream: OutputStream) =
       val buffer = Array.ofDim[Byte](1024)
@@ -44,7 +44,6 @@ object ExtractTar:
           read += n
           val bytes = readN(tarStream, n)
           val res = new String(bytes.takeWhile(_ != 0)).trim()
-          // println(s"$label: $n --  ${bytes.toList} -- $res")
           res
         end ascii
 
@@ -62,6 +61,9 @@ object ExtractTar:
         val headerRemaining = 512 - read
         val isDir = linkOrType == "5"
 
+        if name.contains("libjli") then
+          println(s"$mode -- $name")
+
         val size = Integer.parseInt(sizeStr, 8)
 
         val destination = out.resolve(name)
@@ -69,8 +71,6 @@ object ExtractTar:
         val skipped = tarStream.skip(headerRemaining)
 
         val padding = if size % 512 == 0 then 0 else (512 - (size % 512))
-
-        // println(s"Size: $size, padding: $padding")
 
         if isDir then
           if !Files.isDirectory(destination) then
@@ -80,7 +80,7 @@ object ExtractTar:
           transferN(tarStream, size, fos)
           fos.close()
 
-          chmod(destination, Integer.parseInt(mode))
+          chmod(destination, Integer.parseInt(mode, 8))
 
           tarStream.skip(padding)
         end if

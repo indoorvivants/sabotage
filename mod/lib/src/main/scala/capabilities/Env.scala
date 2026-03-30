@@ -6,3 +6,6 @@ import scala.util.Try
 trait Env:
   def variables: Map[String, String]
   def userHome: Path
+
+object Env:
+  inline def apply(using e: Env) = e
