@@ -12,3 +12,4 @@ trait Files:
   def pwd: Path
   def resolve(path: String): Path
   def list(path: Path): List[Path]
+  def createDirectories(path: Path): Unit

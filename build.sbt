@@ -25,7 +25,8 @@ lazy val lib =
         "-Yexplicit-nulls",
         "-language:experimental.saferExceptions",
         "-language:strictEquality",
-        "-language:experimental.strictEqualityPatternMatching"
+        "-language:experimental.strictEqualityPatternMatching",
+        "-Wunused:all"
       )
     )
 

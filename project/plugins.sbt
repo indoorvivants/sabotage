@@ -11,3 +11,5 @@ addSbtPlugin("com.indoorvivants" % "sbt-doc-view" % "0.0.3")
 libraryDependencies += "com.indoorvivants.detective" %% "platform" % "0.0.2"
 
 addSbtPlugin("com.indoorvivants"   % "sbt-forge-native-binary"  % "0.1.1")
+
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.6")

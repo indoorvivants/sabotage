@@ -6,7 +6,7 @@ import java.nio.file.Path
 import language.experimental.saferExceptions
 
 object DownloadSbtJar:
-  def jarUrl(launcherVersion: String)(using Logger, Network, Env): String =
+  def jarUrl(launcherVersion: String)(using Env): String =
     val repoBase = getEnv.variables
       .get("SBT_LAUNCH_REPO")
       .map(_.trim)
@@ -17,7 +17,6 @@ object DownloadSbtJar:
   def acquireSbtJar(
       launcherVersion: String
   )(using
-      Context,
       Network,
       Files,
       Proc,

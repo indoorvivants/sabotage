@@ -6,9 +6,15 @@ import language.experimental.saferExceptions
 
 case class BuildProperties(
     sbtVersion: String,
+    sbtnVersion: String,
     jdk: Option[String] = None,
     jdkIndex: Option[String] = None
 ):
+  lazy val readSbtVersion =
+    sbtVersion.takeWhile(c => c.isDigit || c == '.') match
+      case s"$major.$minor.$patch" =>
+        Version(major.toInt, minor.toInt, patch.toInt)
+
   def jdkUrl(
       jdkSpec: String,
       index: JvmIndex,
@@ -26,10 +32,11 @@ case class BuildProperties(
 
     index.url(target, vendorKey, versionKey)
   end jdkUrl
+
 end BuildProperties
 
 object BuildProperties:
-  def read(contents: String) =
+  def read(contents: String)(using Context) =
     import java.util.Properties
 
     val prop = new Properties()
@@ -37,9 +44,12 @@ object BuildProperties:
     prop.load(new ByteArrayInputStream(contents.getBytes()))
 
     BuildProperties(
-      prop.getOrDefault("sbt.version", "1.10.3").asInstanceOf[String],
-      Option(prop.get("jdk.version").asInstanceOf[String]),
-      Option(prop.get("jdk.index").asInstanceOf[String])
+      sbtVersion = prop
+        .getOrDefault("sbt.version", getDefaults.sbtVersion)
+        .asInstanceOf[String],
+      sbtnVersion = getDefaults.sbtnVersion,
+      jdk = Option(prop.get("jdk.version").asInstanceOf[String]),
+      jdkIndex = Option(prop.get("jdk.index").asInstanceOf[String])
     )
   end read
 end BuildProperties

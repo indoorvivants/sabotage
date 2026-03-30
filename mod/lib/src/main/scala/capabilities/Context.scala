@@ -3,10 +3,14 @@ package sabotage.lib
 import java.nio.file.Path
 import scala.util.Try
 
+case class Defaults(sbtVersion: String, sbtnVersion: String)
+
 case class Context(
     platform: sabotage.lib.Platform.Target,
+    defaults: Defaults
 )
 
+inline def getDefaults(using ctx: Context) = ctx.defaults
 inline def getEnv(using ctx: Env) = ctx
 inline def getLogger(using ctx: Logger) = ctx
 inline def getNetwork(using ctx: Network) = ctx

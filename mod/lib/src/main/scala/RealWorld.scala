@@ -40,6 +40,8 @@ object RealWorld:
       override def resolve(path: String): Path = Paths.get(path)
       override def list(path: Path) =
         java.nio.file.Files.list(path).toList().asScala.toList
+      override def createDirectories(path: Path) = 
+        java.nio.file.Files.createDirectories(path)
     end files
 
     given Proc with
@@ -50,7 +52,11 @@ object RealWorld:
 
     given context: Context =
       Context(
-        platform = Platform.target
+        platform = Platform.target,
+        defaults = Defaults(
+          sbtVersion = "1.12.5",
+          sbtnVersion = "1.12.5"
+        )
       )
 
     f
