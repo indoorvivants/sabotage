@@ -1,7 +1,10 @@
 package sabotage.lib
 
-def Usage(using Context) = s"""
-Usage: sbt [options]
+def Usage(using Context) =
+  val defaultSbtOpts = getDefaults.defaultSbtOpts.mkString(" ")
+  val defaultJavaOpts = getDefaults.defaultJavaOpts.mkString(" ")
+  s"""
+Usage: sabotage [options]
 
   -h | --help         print this message
   -v | --verbose      this runner is chattier
@@ -39,12 +42,10 @@ Usage: sbt [options]
   --java-home <path>         alternate JAVA_HOME
 
   # jvm options and output control
-  JAVA_OPTS           environment variable, if unset uses "${getDefaults.defaultJavaOpts
-    .mkString(" ")}"
+  JAVA_OPTS           environment variable, if unset uses "$defaultJavaOpts"
   .jvmopts            if this file exists in the current directory, its contents
                       are appended to JAVA_OPTS
-  SBT_OPTS            environment variable, if unset uses "${getDefaults.defaultSbtOpts
-    .mkString(" ")}"
+  SBT_OPTS            environment variable, if unset uses "$defaultSbtOpts"
   .sbtopts            if this file exists in the current directory, its contents
                       are prepended to the runner args
   /etc/sbt/sbtopts    if this file exists, it is prepended to the runner args
@@ -55,3 +56,4 @@ Usage: sbt [options]
 In the case of duplicated or conflicting options, the order above
 shows precedence: JAVA_OPTS lowest, command line options highest.
 """
+end Usage
