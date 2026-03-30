@@ -4,16 +4,8 @@ import java.nio.file.{Path, Paths}
 
 import language.experimental.saferExceptions
 
-object DownloadSbtJar:
-  def jarUrl(launcherVersion: String)(using Env): String =
-    val repoBase = getEnv.variables
-      .get("SBT_LAUNCH_REPO")
-      .map(_.trim)
-      .getOrElse("https://repo1.maven.org/maven2")
-
-    s"$repoBase/org/scala-sbt/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
-
-  def acquireSbtJar(
+object BootstrapSbtJar:
+  def bootstrap(
       launcherVersion: String
   )(using
       Network,
@@ -58,5 +50,14 @@ object DownloadSbtJar:
 
       downloadLocation
     end if
-  end acquireSbtJar
-end DownloadSbtJar
+  end bootstrap
+
+  private def jarUrl(launcherVersion: String)(using Env): String =
+    val repoBase = getEnv.variables
+      .get("SBT_LAUNCH_REPO")
+      .map(_.trim)
+      .getOrElse("https://repo1.maven.org/maven2")
+
+    s"$repoBase/org/scala-sbt/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
+
+end BootstrapSbtJar

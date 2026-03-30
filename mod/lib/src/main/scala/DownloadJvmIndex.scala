@@ -1,6 +1,4 @@
-package sabotage
-
-import sabotage.lib.*
+package sabotage.lib
 
 import language.experimental.saferExceptions
 

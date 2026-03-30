@@ -1,9 +1,5 @@
 package sabotage.lib
 
-
-
-case class Defaults(sbtVersion: String, sbtnVersion: String)
-
 case class Context(
     platform: sabotage.lib.Platform.Target,
     defaults: Defaults

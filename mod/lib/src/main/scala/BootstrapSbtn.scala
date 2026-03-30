@@ -2,12 +2,13 @@ package sabotage.lib
 
 import sabotage.lib.Platform.*
 
-import java.io.FileInputStream
-import java.nio.file.{Path, Paths}
+import java.nio.file.Path
 
 import language.experimental.saferExceptions
+import java.nio.file.Paths
+import java.io.FileInputStream
 
-object DownloadSbtn:
+object BootstrapSbtn:
   case class Err(msg: String, cause: Throwable | Null = null)
       extends Exception(msg, cause)
 
@@ -35,7 +36,7 @@ object DownloadSbtn:
     end match
   end archiveUrl
 
-  def acquireSbtn(
+  def bootstrap(
       sbtnVersion: String
   )(using
       Context,
@@ -76,5 +77,5 @@ object DownloadSbtn:
 
       downloadLocation
     end if
-  end acquireSbtn
-end DownloadSbtn
+  end bootstrap
+end BootstrapSbtn
