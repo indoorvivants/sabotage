@@ -1,7 +1,6 @@
 package sabotage.lib
 
 import java.nio.file.Path
-import scala.util.Try
 
 trait Files:
   def isDir(path: Path): Boolean

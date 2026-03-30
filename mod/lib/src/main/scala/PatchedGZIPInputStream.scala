@@ -1,8 +1,7 @@
 package sabotage.lib
 
-import java.util.zip.GZIPInputStream
 import java.io.InputStream
-import java.util.zip.InflaterInputStream
+import java.util.zip.GZIPInputStream
 
 class PatchedGZIPInputStream(in: InputStream, size: Int)
     extends GZIPInputStream(in, size):

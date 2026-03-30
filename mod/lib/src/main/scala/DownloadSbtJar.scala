@@ -1,7 +1,6 @@
 package sabotage.lib
 
-import java.nio.file.Paths
-import java.nio.file.Path
+import java.nio.file.{Path, Paths}
 
 import language.experimental.saferExceptions
 

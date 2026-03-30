@@ -2,11 +2,10 @@ package sabotage.lib
 
 import sabotage.lib.Platform.*
 
-import java.nio.file.Path
+import java.io.FileInputStream
+import java.nio.file.{Path, Paths}
 
 import language.experimental.saferExceptions
-import java.nio.file.Paths
-import java.io.FileInputStream
 
 object DownloadSbtn:
   case class Err(msg: String, cause: Throwable | Null = null)

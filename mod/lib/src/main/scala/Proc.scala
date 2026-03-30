@@ -1,7 +1,5 @@
 package sabotage.lib
 
-import java.nio.file.Path
-import scala.util.Try
 import scala.sys.process.ProcessLogger
 
 trait Proc:

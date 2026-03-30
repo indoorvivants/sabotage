@@ -1,6 +1,7 @@
 package sabotage
 
 import sabotage.lib.*
+
 import language.experimental.saferExceptions
 
 object DownloadJvmIndex:

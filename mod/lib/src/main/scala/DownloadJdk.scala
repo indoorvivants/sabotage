@@ -1,9 +1,9 @@
 package sabotage.lib
 
-import java.nio.file.Path
-import language.experimental.saferExceptions
-import java.util.zip.GZIPInputStream
 import java.io.FileInputStream
+import java.nio.file.Path
+
+import language.experimental.saferExceptions
 
 object DownloadJdk:
   case class Err(msg: String, cause: Exception | Null = null)

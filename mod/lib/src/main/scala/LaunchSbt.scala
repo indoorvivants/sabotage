@@ -1,9 +1,10 @@
 package sabotage.lib
 
-import scalanative.unsafe.*
-import scala.scalanative.posix.unistd
 import java.nio.file.Path
 import scala.scalanative.libc.errno
+import scala.scalanative.posix.unistd
+
+import scalanative.unsafe.*
 
 object LaunchSbt:
   def launchNativeClient(
