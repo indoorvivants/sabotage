@@ -16,8 +16,9 @@ object DownloadJdk:
       Files,
       Logger,
       Env,
-      Context
-  ): Path throws (NetworkError | Err) =
+      Context,
+      CanThrow[NetworkError | Err]
+  ): Path =
     val (isTgz, downloadUrl) = rawUrl match
       case s"tgz+$rest" => true -> rest
       case _            => false -> rawUrl

@@ -10,7 +10,7 @@ object DownloadJvmIndex:
 
   def acquireJvmIndex(
       jvmIndex: String
-  )(using Network, Files, Logger, Env): JvmIndex throws NetworkError =
+  )(using Network, Files, Logger, Env, CanThrow[NetworkError]): JvmIndex =
     val url = indexUrl(jvmIndex)
     val downloadLocation =
       getEnv.userHome.resolve(s".cache/sabotage/jvm-index/$jvmIndex.json")

@@ -9,7 +9,7 @@ case class JvmIndex(data: JvmIndex.Data):
       target: Target,
       vendor: JvmIndex.Vendor,
       version: JvmIndex.Version
-  ): Option[String] throws JvmIndex.Err =
+  )(using CanThrow[JvmIndex.Err]): Option[String] =
     val osKey = target.os match
       case OS.MacOS   => "darwin"
       case OS.Linux   => "linux"
