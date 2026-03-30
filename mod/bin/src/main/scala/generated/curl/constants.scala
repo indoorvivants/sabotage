@@ -2,8 +2,6 @@ package curl
 
 import _root_.scala.scalanative.unsafe.*
 import _root_.scala.scalanative.unsigned.*
-import _root_.scala.scalanative.libc.*
-import _root_.scala.scalanative.*
 
 val CURL_HTTP_VERSION_NONE: CUnsignedInt = 0.toUInt
 val CURL_HTTP_VERSION_1_0: CUnsignedInt = 1.toUInt

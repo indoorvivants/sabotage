@@ -44,6 +44,7 @@ lazy val bin = project
     vcpkgDependencies := VcpkgDependencies("curl"),
     vcpkgNativeConfig ~= { _.addRenamedLibrary("curl", "libcurl") },
     buildBinaryConfig ~= { (_).withName("sabotage") },
+    scalacOptions += "-Wunused:all",
     bindgenBindings += {
       Binding(
         vcpkgConfigurator.value.includes("curl") / "curl" / "curl.h",

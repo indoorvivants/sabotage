@@ -57,11 +57,11 @@ object LaunchSbt:
       if error == -1 then getLogger.error(s"execve failed with ${errno.errno}")
   end launchJar
 
-  private def printP(ptr: Ptr[CString]) =
-    var i = 0
-    while !(ptr + i) != null do
-      println(fromCString(!(ptr + i)))
-      i += 1
+  // private def printP(ptr: Ptr[CString]) =
+  //   var i = 0
+  //   while !(ptr + i) != null do
+  //     println(fromCString(!(ptr + i)))
+  //     i += 1
 
   private def encode(args: Seq[String])(using Zone) =
     val ptr = alloc[CString](args.length + 1)

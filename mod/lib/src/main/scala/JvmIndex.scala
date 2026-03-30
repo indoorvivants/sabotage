@@ -9,16 +9,18 @@ case class JvmIndex(data: JvmIndex.Data):
       target: Target,
       vendor: JvmIndex.Vendor,
       version: JvmIndex.Version
-  ): Option[String] =
+  ): Option[String] throws JvmIndex.Err =
     val osKey = target.os match
       case OS.MacOS   => "darwin"
       case OS.Linux   => "linux"
       case OS.Windows => "windows"
+      case _          => throw JvmIndex.Err("Unsupported platform")
 
-    // TODO: very incomplete
+    IMPROVE("Handle more architecture combinations")
     val archKey = (target.arch, target.bits) match
       case (Arch.Intel, Bits.x64) => "amd64"
       case (Arch.Arm, Bits.x64)   => "arm64"
+      case _ => throw JvmIndex.Err("Unsupported architecture")
 
     for
       os <- data.get(osKey)
@@ -27,11 +29,13 @@ case class JvmIndex(data: JvmIndex.Data):
       url <- vendor.get(version)
     yield url
 
-    // data.get(osKey).flatMap(_.get(archKey))
   end url
 end JvmIndex
 
 object JvmIndex:
+
+  case class Err(msg: String, cause: Throwable | Null = null)
+      extends Exception(msg, cause)
   type OS = String
   type Arch = String
   type Vendor = String

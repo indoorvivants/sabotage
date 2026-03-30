@@ -11,7 +11,7 @@ object BootstrapJdk:
       Files,
       Logger,
       Context
-  ): Path throws (NetworkError | DownloadJdk.Err) =
+  ): Path throws (NetworkError | DownloadJdk.Err | JvmIndex.Err) =
     properties.jdk match
       case None          => getFiles.resolve(getEnv.variables("JAVA_HOME"))
       case Some(jdkSpec) =>

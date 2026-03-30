@@ -1,13 +1,8 @@
 package sabotage.bin
 
 import sabotage.lib.*
+
 import language.experimental.saferExceptions
-import java.nio.file.Path
-import java.nio.file.Paths
-import scala.util.Try
-import scala.sys.process.ProcessLogger
-import java.io.FileReader
-import scala.util.Using
 
 @main def hello(arguments: String*) =
   RealWorld.use:
@@ -48,5 +43,7 @@ import scala.util.Using
           getLogger.error(s"(downloading sbtn) ${n.msg}")
         case n: ReadLauncherArgs.Err =>
           getLogger.error(s"(parsing arguments) ${n.msg}")
+        case n: JvmIndex.Err =>
+          getLogger.error(s"(jvm index) ${n.msg}")
         case other => throw other
 end hello

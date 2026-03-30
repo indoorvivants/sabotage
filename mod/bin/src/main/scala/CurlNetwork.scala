@@ -1,12 +1,11 @@
 package sabotage.bin
 import curl.*
 import sabotage.lib.*
+
 import java.nio.file.Path
-import scala.util.Try
 
 import scalanative.unsafe.*
 import scalanative.libc.*
-
 import language.experimental.saferExceptions
 
 class CurlNetwork private (inst: Ptr[CURL]) extends Network:

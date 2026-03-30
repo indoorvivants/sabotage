@@ -2,11 +2,10 @@ package sabotage.lib
 
 import sabotage.lib.Platform.*
 
-import java.nio.file.Path
+import java.io.FileInputStream
+import java.nio.file.{Path, Paths}
 
 import language.experimental.saferExceptions
-import java.nio.file.Paths
-import java.io.FileInputStream
 
 object BootstrapSbtn:
   case class Err(msg: String, cause: Throwable | Null = null)
@@ -66,7 +65,6 @@ object BootstrapSbtn:
 
       getNetwork.downloadFile(archive.url, tempLocation)
 
-      IMPROVE("Handle zip archives")
       archive.archive match
         case "tar.gz" =>
           getLogger.info(s"Extracting $tempLocation into $extractedPath")
@@ -74,6 +72,7 @@ object BootstrapSbtn:
             PatchedGZIPInputStream(FileInputStream(tempLocation.toFile)),
             extractedPath
           )
+        case "zip" => TODO("handle zip archives (windows)")
 
       downloadLocation
     end if

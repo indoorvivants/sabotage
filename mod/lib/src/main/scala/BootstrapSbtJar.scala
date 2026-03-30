@@ -27,9 +27,7 @@ object BootstrapSbtJar:
     else
       val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
-      getLogger.info(s"downloading sbt launcher $launcherVersion")
-      getLogger.info(jar.toString)
-      getLogger.info(tempLocation.toString)
+      getLogger.info(s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]")
       getNetwork.downloadFile(jar, tempLocation)
       getNetwork.downloadFile(sha, shaLocation)
 
@@ -37,7 +35,7 @@ object BootstrapSbtJar:
       if getProc.cmdOk(Seq("shasum", "-v")) then
         val out =
           getProc.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
-        val shasum :: _ = out.split("\\s+").toList
+        val shasum :: _ = out.split("\\s+").toList.runtimeChecked
 
         assert(
           shasum == getFiles.contents(shaLocation),

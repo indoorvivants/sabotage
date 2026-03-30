@@ -1,8 +1,9 @@
 package sabotage.bin
 
+import curl.{CURLcode, curl_easy_strerror}
+
 import scala.quoted.*
-import curl.CURLcode
-import curl.curl_easy_strerror
+
 import scalanative.unsafe.fromCString
 
 inline def check(inline expr: => CURLcode): CURLcode = ${ checkImpl('expr) }

@@ -27,7 +27,7 @@ object ExtractTar:
       transferred
     end transferN
 
-    var fos = Option.empty[FileOutputStream]
+    // var fos = Option.empty[FileOutputStream]
     boundary:
       def readN(in: InputStream, n: Int) =
         val bytes = new Array[Byte](n)
@@ -61,9 +61,6 @@ object ExtractTar:
         val ustarIndicator = ascii(6, "ustarIndicator")
         val headerRemaining = 512 - read
         val isDir = linkOrType == "5"
-
-        if name.contains("libjli") then
-          println(s"$mode -- $name")
 
         val size = Integer.parseInt(sizeStr, 8)
 
