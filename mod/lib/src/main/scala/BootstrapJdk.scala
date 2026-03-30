@@ -10,8 +10,10 @@ object BootstrapJdk:
       Network,
       Files,
       Logger,
-      Context
-  ): Path throws (NetworkError | DownloadJdk.Err | JvmIndex.Err) =
+      Context,
+      // Can't use `throws` here because SN breaks at link time
+      CanThrow[JvmIndex.Err | NetworkError | DownloadJdk.Err]
+  ): Path =
     properties.jdk match
       case None          => getFiles.resolve(getEnv.variables("JAVA_HOME"))
       case Some(jdkSpec) =>

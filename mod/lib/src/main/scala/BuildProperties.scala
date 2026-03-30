@@ -19,7 +19,7 @@ case class BuildProperties(
       jdkSpec: String,
       index: JvmIndex,
       target: Platform.Target
-  ): Option[String] throws JvmIndex.Err =
+  )(using CanThrow[JvmIndex.Err]): Option[String] =
     val (vendor, versionSpec) = jdkSpec match
       case s"$vendor:$version" => (vendor, version)
       case other               => ("adoptium", other)
