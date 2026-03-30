@@ -109,10 +109,23 @@ jobs:
 
       - name: Install libs
         shell: pwsh
+        id: vcpkg
         run: vcpkg install bdwgc zlib --triplet=x64-windows-static
+
+      - name: Resolve env variables
+        id: resolve-env
+        shell: pwsh
+        run: |
+          "ProgramFiles=${env:ProgramFiles}" >> $env:GITHUB_OUTPUT
+          "LocalAppData=${env:LocalAppData}" >> $env:GITHUB_OUTPUT
+          "UserProfile=${env:UserProfile}" >> $env:GITHUB_OUTPUT
+          "VcpkgLibs=${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static" >> $env:GITHUB_OUTPUT
 
       - name: Build binary (windows)
         run: sbt buildBinaryPlatformRelease
+        env:
+          SCALANATIVE_INCLUDE_DIRS: ${{steps.resolve-env.outputs.VcpkgLibs}}\include
+          SCALANATIVE_LIB_DIRS: ${{steps.resolve-env.outputs.VcpkgLibs}}\lib
         shell: cmd
 
   release:
