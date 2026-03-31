@@ -33,28 +33,28 @@ case class LauncherArgs(
   override def toString(): String =
     s"""
     |LauncherArgs:
-    |-help: $help
-    |-printVersion: $printVersion
-    |-verbose: $verbose
-    |-client: $client
-    |-server: $server
-    |-jvmClient: $jvmClient
-    |-debug: $debug
-    |-pass: $pass
-    |-javaOpts: $javaOpts
-    |-sbtOpts: $sbtOpts
-    |-noColors: $noColors
-    |-timings: $timings
-    |-traces: $traces
-    |-color: $color
-    |-noShare: $noShare
-    |-noGlobal: $noGlobal
-    |-allowEmpty: $allowEmpty
-    |-newCmd: $newCmd
-    |-mem: $mem
-    |-sbtVersion: $sbtVersion
-    |-shutdownallCmd: $shutdownallCmd
-    |-javaHome: $javaHome
+    | - help: $help
+    | - printVersion: $printVersion
+    | - verbose: $verbose
+    | - client: $client
+    | - server: $server
+    | - jvmClient: $jvmClient
+    | - debug: $debug
+    | - pass: $pass
+    | - javaOpts: $javaOpts
+    | - sbtOpts: $sbtOpts
+    | - noColors: $noColors
+    | - timings: $timings
+    | - traces: $traces
+    | - color: $color
+    | - noShare: $noShare
+    | - noGlobal: $noGlobal
+    | - allowEmpty: $allowEmpty
+    | - newCmd: $newCmd
+    | - mem: $mem
+    | - sbtVersion: $sbtVersion
+    | - shutdownallCmd: $shutdownallCmd
+    | - javaHome: $javaHome
     """.trim.stripMargin
 end LauncherArgs
 

@@ -32,7 +32,8 @@ import language.experimental.saferExceptions
           args.javaHome.getOrElse(BootstrapJdk.bootstrap(properties))
 
         if ShouldUseSbtn.decide(properties.readSbtVersion, args) then
-          val sbtnLocation = BootstrapSbtn.bootstrap(properties.sbtVersion)
+          val sbtnLocation =
+            BootstrapSbtn.bootstrap(Context.defaults.sbtnVersion)
           LaunchSbt.launchNativeClient(jdkHome, sbtnLocation, args.pass)
         else LaunchSbt.launchJar(jdkHome, jarLocation, args.pass)
 
@@ -49,5 +50,7 @@ import language.experimental.saferExceptions
           Logger.error(s"(jvm index) ${n.msg}")
         case _: CheckWorkingDirectory.NoSbtBuildError.type =>
           System.err.println(EmptyFolderMessage)
+        case n: LaunchSbt.Err =>
+          Logger.error(s"(launching sbt) ${n.msg}")
         case other => throw other
 end hello

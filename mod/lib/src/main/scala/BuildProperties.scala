@@ -25,7 +25,7 @@ case class BuildProperties(
       case other               => ("adoptium", other)
 
     val versionKey = versionSpec match
-      case s"1.$ver" => versionSpec
+      case s"1.${_}" => versionSpec
       case other     => s"1.$other"
 
     val vendorKey = s"jdk@$vendor"

@@ -46,6 +46,7 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
       )
 
       check(curl_easy_setopt(inst, CURLoption.CURLOPT_WRITEDATA, fp))
+      check(curl_easy_setopt(inst, CURLoption.CURLOPT_FAILONERROR, 1L))
       check(curl_easy_perform(inst))
 
       stdio.fclose(fp)

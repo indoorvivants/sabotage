@@ -4,6 +4,11 @@ import java.nio.file.{Path, Paths}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.sys.process.ProcessLogger
 
+import scala.scalanative.libc.errno
+import scala.scalanative.posix.unistd
+
+import scalanative.unsafe.*
+
 object RealWorld:
   def use(f: (Logger, Env, Files, Context, Proc) ?=> Unit): Unit =
     given logStderr: Logger = new Logger:
@@ -47,8 +52,31 @@ object RealWorld:
     given Proc with
       override def cmdOk(args: Seq[String]): Boolean =
         process(args*).exitCode == 0
+
       override def cmdOutput(args: Seq[String]): String =
         process(args*).stdout.mkString(System.lineSeparator())
+
+      override def execve(
+          command: String,
+          env: Map[String, String],
+          arguments: Seq[String]
+      ): Option[String] =
+        Zone:
+          val envP = encodeCArgs(env.map((k, v) => k + "=" + v).toSeq)
+          val argsP = encodeCArgs(command +: arguments)
+          if !scalanative.meta.LinktimeInfo.isWindows then unistd.environ = envP
+          val error = unistd.execve(toCString(command), argsP, envP)
+          Option.when(error == -1)(s"execve failed with ${errno.errno}")
+      end execve
+
+      private def encodeCArgs(args: Seq[String])(using Zone) =
+        val ptr = alloc[CString](args.length + 1)
+        for i <- 0 until args.length do !(ptr + i) = toCString(args(i))
+
+        import language.unsafeNulls
+        !(ptr + args.length) = null
+
+        ptr
 
       private def process(cmd: String*) =
         val stderr = List.newBuilder[String]
