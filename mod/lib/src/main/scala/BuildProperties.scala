@@ -45,9 +45,9 @@ object BuildProperties:
 
     BuildProperties(
       sbtVersion = prop
-        .getOrDefault("sbt.version", getDefaults.sbtVersion)
+        .getOrDefault("sbt.version", Context.defaults.sbtVersion)
         .asInstanceOf[String],
-      sbtnVersion = getDefaults.sbtnVersion,
+      sbtnVersion = Context.defaults.sbtnVersion,
       jdk = Option(prop.get("jdk.version").asInstanceOf[String]),
       jdkIndex = Option(prop.get("jdk.index").asInstanceOf[String])
     )

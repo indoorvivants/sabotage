@@ -5,10 +5,6 @@ case class Context(
     defaults: Defaults
 )
 
-inline def getDefaults(using ctx: Context) = ctx.defaults
-inline def getEnv(using ctx: Env) = ctx
-inline def getLogger(using ctx: Logger) = ctx
-inline def getNetwork(using ctx: Network) = ctx
-inline def getProc(using ctx: Proc) = ctx
-inline def getFiles(using ctx: Files) = ctx
-inline def getPlatform(using ctx: Context) = ctx.platform
+object Context extends CapabilityCompanion[Context]:
+  inline def defaults(using ctx: Context) = ctx.defaults
+  inline def platform(using ctx: Context) = ctx.platform

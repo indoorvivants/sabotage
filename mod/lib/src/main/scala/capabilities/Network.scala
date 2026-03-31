@@ -4,7 +4,11 @@ import java.nio.file.Path
 
 import language.experimental.saferExceptions
 
-case class NetworkError(msg: String) extends Exception
 trait Network:
-  def downloadFile(url: String, path: Path)(using Logger): Unit throws NetworkError
+  def downloadFile(url: String, path: Path)(using
+      Logger
+  ): Unit throws Network.Err
 
+object Network extends CapabilityCompanion[Network]:
+  case class Err(msg: String, cause: Throwable | Null = null)
+      extends Exception(msg, cause)

@@ -13,7 +13,7 @@ object LaunchSbt:
       arguments: Seq[String]
   )(using Env, Logger) =
     Zone:
-      getLogger.info(
+      Logger.info(
         s"Launching SBT native client [$sbtnLocation] using jdkHome [$jdkHome] and arguments [${arguments.mkString(" ")}]"
       )
 
@@ -21,14 +21,14 @@ object LaunchSbt:
         Seq(
           s"JAVA_HOME=$jdkHome",
           s"JDK_HOME=$jdkHome",
-          s"PATH=$jdkHome/bin:${getEnv.variables("PATH")}"
+          s"PATH=$jdkHome/bin:${Env.variables("PATH")}"
         )
       )
       val argsP = encode(sbtnLocation.toString() +: arguments)
 
       unistd.environ = envP
       val error = unistd.execve(toCString(sbtnLocation.toString()), argsP, envP)
-      if error == -1 then getLogger.error(s"execve failed with ${errno.errno}")
+      if error == -1 then Logger.error(s"execve failed with ${errno.errno}")
   end launchNativeClient
 
   def launchJar(jdkHome: Path, jarLocation: Path, arguments: Seq[String])(using
@@ -36,7 +36,7 @@ object LaunchSbt:
       Logger
   ) =
     Zone:
-      getLogger.info(
+      Logger.info(
         s"Launching SBT jar [$jarLocation] using jdkHome [$jdkHome] and arguments [${arguments.mkString(" ")}]"
       )
       val java = jdkHome.resolve("bin/java")
@@ -45,7 +45,7 @@ object LaunchSbt:
         Seq(
           s"JAVA_HOME=$jdkHome",
           s"JDK_HOME=$jdkHome",
-          s"PATH=$jdkHome/bin:${getEnv.variables("PATH")}"
+          s"PATH=$jdkHome/bin:${Env.variables("PATH")}"
         )
       )
       val argsP = encode(
@@ -54,7 +54,7 @@ object LaunchSbt:
 
       unistd.environ = envP
       val error = unistd.execve(toCString(java.toString()), argsP, envP)
-      if error == -1 then getLogger.error(s"execve failed with ${errno.errno}")
+      if error == -1 then Logger.error(s"execve failed with ${errno.errno}")
   end launchJar
 
   // private def printP(ptr: Ptr[CString]) =

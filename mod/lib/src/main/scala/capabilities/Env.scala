@@ -6,5 +6,6 @@ trait Env:
   def variables: Map[String, String]
   def userHome: Path
 
-object Env:
-  inline def apply(using e: Env) = e
+object Env extends CapabilityCompanion[Env]:
+  inline def variables(using env: Env) = env.variables
+  inline def userHome(using env: Env) = env.userHome

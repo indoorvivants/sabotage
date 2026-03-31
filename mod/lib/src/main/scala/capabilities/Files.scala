@@ -12,3 +12,6 @@ trait Files:
   def resolve(path: String): Path
   def list(path: Path): List[Path]
   def createDirectories(path: Path): Unit
+end Files
+
+object Files extends CapabilityCompanion[Files]

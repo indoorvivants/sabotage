@@ -9,9 +9,11 @@ import scalanative.libc.*
 import language.experimental.saferExceptions
 
 class CurlNetwork private (inst: Ptr[CURL]) extends Network:
-  override def downloadFile(url: String, path: Path)(using Logger): Unit throws NetworkError =
+  override def downloadFile(url: String, path: Path)(using
+      Logger
+  ): Unit throws Network.Err =
     Zone:
-      getLogger.info(s"Downloading [$url] to [$path]")
+      Logger.info(s"Downloading [$url] to [$path]")
       val cPath = toCString(path.toAbsolutePath().toString())
       val cUrl = toCString(url)
       check(curl_easy_setopt(inst, CURLoption.CURLOPT_URL, cUrl))
@@ -19,7 +21,10 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
 
       val fp = stdio.fopen(cPath, c"wb")
 
-      assert(fp != null, s"Failed to open path ${fromCString(cPath)} for writing")
+      assert(
+        fp != null,
+        s"Failed to open path ${fromCString(cPath)} for writing"
+      )
 
       val write_data_callback = CFuncPtr4.fromScalaFunction {
         (
@@ -31,11 +36,13 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
           stdio.fwrite(ptr, size, nmemb, userdata)
       }
 
-      check(curl_easy_setopt(
-        inst,
-        CURLoption.CURLOPT_WRITEFUNCTION,
-        write_data_callback
-      ))
+      check(
+        curl_easy_setopt(
+          inst,
+          CURLoption.CURLOPT_WRITEFUNCTION,
+          write_data_callback
+        )
+      )
 
       check(curl_easy_setopt(inst, CURLoption.CURLOPT_WRITEDATA, fp))
       check(curl_easy_perform(inst))

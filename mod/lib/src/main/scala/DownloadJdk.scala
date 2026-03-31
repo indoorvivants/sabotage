@@ -17,7 +17,7 @@ object DownloadJdk:
       Logger,
       Env,
       Context,
-      CanThrow[NetworkError | Err]
+      CanThrow[Err | Network.Err]
   ): Path =
     val (isTgz, downloadUrl) = rawUrl match
       case s"tgz+$rest" => true -> rest
@@ -26,10 +26,10 @@ object DownloadJdk:
     val downloadPath = downloadUrl.replaceFirst(":/", "")
 
     val archivePath =
-      getEnv.userHome.resolve(s".cache/sabotage/jdk/$downloadPath.temp")
+      Env.get.userHome.resolve(s".cache/sabotage/jdk/$downloadPath.temp")
 
     val extractedPath =
-      getEnv.userHome.resolve(s".cache/sabotage/jdk/$downloadPath")
+      Env.get.userHome.resolve(s".cache/sabotage/jdk/$downloadPath")
 
     def extract() =
       val is =
@@ -37,17 +37,17 @@ object DownloadJdk:
           PatchedGZIPInputStream(FileInputStream(archivePath.toFile))
         else FileInputStream(archivePath.toFile)
 
-      getLogger.info(s"Extracting $archivePath into $extractedPath")
+      Logger.info(s"Extracting $archivePath into $extractedPath")
       ExtractTar.extract(is, extractedPath)
       extractedPath
 
-    if getFiles.isDir(extractedPath) then extractedPath
-    else if getFiles.isFile(archivePath) then extract()
+    if Files.get.isDir(extractedPath) then extractedPath
+    else if Files.get.isFile(archivePath) then extract()
     else
-      getLogger.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
+      Logger.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
       java.nio.file.Files.createDirectories(archivePath.getParent())
       IMPROVE("Verify checksum of downloade JDK")
-      getNetwork.downloadFile(downloadUrl, archivePath)
+      Network.get.downloadFile(downloadUrl, archivePath)
       extract()
     end if
 
@@ -60,14 +60,14 @@ object DownloadJdk:
       else if root.resolve("Contents/Home/bin/java").toFile().isFile() then
         Some(root.resolve("Contents/Home"))
       else
-        val children = getFiles.list(root)
+        val children = Files.get.list(root)
         children.iterator
           .map(findHome(_, depth - 1))
           .collectFirst:
             case Some(p) => p
 
     import Platform.OS.*
-    getPlatform.os match
+    Context.get.platform.os match
       case MacOS =>
         findHome(extractedPath, 2).getOrElse(throw failedToResolveHome)
       case Linux => extractedPath

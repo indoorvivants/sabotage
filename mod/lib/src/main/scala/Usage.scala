@@ -1,8 +1,8 @@
 package sabotage.lib
 
 def Usage(using Context) =
-  val defaultSbtOpts = getDefaults.defaultSbtOpts.mkString(" ")
-  val defaultJavaOpts = getDefaults.defaultJavaOpts.mkString(" ")
+  val defaultSbtOpts = Context.defaults.defaultSbtOpts.mkString(" ")
+  val defaultJavaOpts = Context.defaults.defaultJavaOpts.mkString(" ")
   s"""
 Usage: sabotage [options]
 
@@ -29,7 +29,7 @@ Usage: sabotage [options]
   --sbt-boot  <path>  path to shared boot directory (default: ~/.sbt/boot in 0.11 series)
   --sbt-cache <path>  path to global cache directory (default: operating system specific)
   --ivy       <path>  path to local Ivy repository (default: ~/.ivy2)
-  --mem    <integer>  set memory options (default: ${getDefaults.defaultMem})
+  --mem    <integer>  set memory options (default: ${Context.defaults.defaultMem})
   --no-share          use all local caches; no sharing
   --no-global         uses global caches, but does not use global ~/.sbt directory.
   --jvm-debug <port>  Turn on JVM debugging, open at the given port.

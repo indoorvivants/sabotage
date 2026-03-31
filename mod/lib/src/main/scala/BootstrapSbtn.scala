@@ -21,7 +21,7 @@ object BootstrapSbtn:
     def url(qualifier: String, ext: String) =
       s"https://github.com/sbt/sbtn-dist/releases/download/v$launcherVersion/sbtn-$qualifier-${launcherVersion}.$ext"
 
-    getPlatform match
+    Context.platform match
       case Target(OS.Linux, Arch.Intel, Bits.x64) =>
         SbtnUrl("sbtn", "tar.gz", url("x86_64-pc-linux", "tar.gz"))
       case Target(OS.Linux, Arch.Arm, Bits.x64) =>
@@ -43,31 +43,31 @@ object BootstrapSbtn:
       Files,
       Logger,
       Env
-  ): Path throws (NetworkError | Err) =
+  ): Path throws (Err | Network.Err) =
     val archive = archiveUrl(sbtnVersion)
 
     val downloadLocation =
-      getEnv.userHome.resolve(
+      Env.get.userHome.resolve(
         s".cache/sbt/boot/sbtn/$sbtnVersion/${archive.name}"
       )
 
-    getLogger.info(s"sbtn location $downloadLocation")
+    Logger.info(s"sbtn location $downloadLocation")
 
-    if getFiles.isFile(downloadLocation) then downloadLocation
+    if Files.get.isFile(downloadLocation) then downloadLocation
     else
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
-      getLogger.info(
+      Logger.info(
         s"downloading sbtn $sbtnVersion from [${archive.url}] to [$tempLocation]"
       )
       val extractedPath = downloadLocation.getParent()
 
-      getFiles.createDirectories(extractedPath)
+      Files.get.createDirectories(extractedPath)
 
-      getNetwork.downloadFile(archive.url, tempLocation)
+      Network.get.downloadFile(archive.url, tempLocation)
 
       archive.archive match
         case "tar.gz" =>
-          getLogger.info(s"Extracting $tempLocation into $extractedPath")
+          Logger.info(s"Extracting $tempLocation into $extractedPath")
           ExtractTar.extract(
             PatchedGZIPInputStream(FileInputStream(tempLocation.toFile)),
             extractedPath

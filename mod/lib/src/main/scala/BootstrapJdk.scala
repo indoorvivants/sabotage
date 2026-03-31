@@ -12,10 +12,10 @@ object BootstrapJdk:
       Logger,
       Context,
       // Can't use `throws` here because SN breaks at link time
-      CanThrow[JvmIndex.Err | NetworkError | DownloadJdk.Err]
+      CanThrow[JvmIndex.Err | Network.Err | DownloadJdk.Err]
   ): Path =
     properties.jdk match
-      case None          => getFiles.resolve(getEnv.variables("JAVA_HOME"))
+      case None          => Files.get.resolve(Env.get.variables("JAVA_HOME"))
       case Some(jdkSpec) =>
         val index = DownloadJvmIndex.acquireJvmIndex(
           properties.jdkIndex.getOrElse("coursier")

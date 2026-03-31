@@ -2,6 +2,7 @@ package sabotage.lib
 
 import java.nio.file.{Path, Paths}
 import scala.jdk.CollectionConverters.ListHasAsScala
+import scala.sys.process.ProcessLogger
 
 object RealWorld:
   def use(f: (Logger, Env, Files, Context, Proc) ?=> Unit): Unit =
@@ -48,6 +49,41 @@ object RealWorld:
         process(args*).exitCode == 0
       override def cmdOutput(args: Seq[String]): String =
         process(args*).stdout.mkString(System.lineSeparator())
+
+      private def process(cmd: String*) =
+        val stderr = List.newBuilder[String]
+        val stdout = List.newBuilder[String]
+
+        val logger = ProcessLogger.apply(
+          (o: String) => stdout += o,
+          (e: String) => stderr += e
+        )
+
+        val proces = new java.lang.ProcessBuilder(cmd*)
+          .start()
+
+        io.Source
+          .fromInputStream(proces.getErrorStream())
+          .getLines
+          .foreach(logger.err(_))
+
+        io.Source
+          .fromInputStream(proces.getInputStream())
+          .getLines
+          .foreach(logger.out(_))
+
+        val exitCode = proces.waitFor()
+
+        ProcessResult(stdout.result(), stderr.result(), exitCode, cmd.toList)
+      end process
+
+      private case class ProcessResult(
+          stdout: List[String],
+          stderr: List[String],
+          exitCode: Int,
+          command: List[String]
+      )
+    end given
 
     given context: Context =
       Context(

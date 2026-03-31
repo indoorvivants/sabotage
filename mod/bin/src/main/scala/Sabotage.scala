@@ -9,17 +9,17 @@ import language.experimental.saferExceptions
     CurlNetwork.use:
       try
         val args = ReadLauncherArgs.read(arguments)
-        getLogger.info(args.toString())
+        Logger.info(args.toString())
 
         if args.help then
           println(Usage)
           sys.exit(0)
 
         val propertiesLocation =
-          getFiles.pwd.resolve("project/build.properties")
+          Files.get.pwd.resolve("project/build.properties")
 
         val properties =
-          BuildProperties.read(getFiles.contents(propertiesLocation))
+          BuildProperties.read(Files.get.contents(propertiesLocation))
 
         val sbtVersion = args.sbtVersion.getOrElse(properties.sbtVersion)
 
@@ -35,15 +35,15 @@ import language.experimental.saferExceptions
         else LaunchSbt.launchJar(jdkHome, jarLocation, args.pass)
 
       catch
-        case n: NetworkError =>
-          getLogger.error(s"(network) ${n.msg}")
+        case n: Network.Err =>
+          Logger.error(s"(network) ${n.msg}")
         case n: DownloadJdk.Err =>
-          getLogger.error(s"(downloading jdk) ${n.msg}")
+          Logger.error(s"(downloading jdk) ${n.msg}")
         case n: BootstrapSbtn.Err =>
-          getLogger.error(s"(downloading sbtn) ${n.msg}")
+          Logger.error(s"(downloading sbtn) ${n.msg}")
         case n: ReadLauncherArgs.Err =>
-          getLogger.error(s"(parsing arguments) ${n.msg}")
+          Logger.error(s"(parsing arguments) ${n.msg}")
         case n: JvmIndex.Err =>
-          getLogger.error(s"(jvm index) ${n.msg}")
+          Logger.error(s"(jvm index) ${n.msg}")
         case other => throw other
 end hello

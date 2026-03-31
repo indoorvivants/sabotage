@@ -13,45 +13,47 @@ object BootstrapSbtJar:
       Proc,
       Logger,
       Env
-  ): Path throws (NetworkError) =
+  ): Path throws (Network.Err) =
     val jar = jarUrl(launcherVersion)
     val sha = jar + ".sha1"
     val downloadLocation =
-      getEnv.userHome.resolve(
+      Env.get.userHome.resolve(
         s".cache/sbt/boot/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
       )
 
     java.nio.file.Files.createDirectories(downloadLocation.getParent())
 
-    if getFiles.isFile(downloadLocation) then downloadLocation
+    if Files.get.isFile(downloadLocation) then downloadLocation
     else
       val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
-      getLogger.info(s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]")
-      getNetwork.downloadFile(jar, tempLocation)
-      getNetwork.downloadFile(sha, shaLocation)
+      Logger.info(
+        s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]"
+      )
+      Network.get.downloadFile(jar, tempLocation)
+      Network.get.downloadFile(sha, shaLocation)
 
       IMPROVE("Avoid shelling out to shasum")
-      if getProc.cmdOk(Seq("shasum", "-v")) then
+      if Proc.get.cmdOk(Seq("shasum", "-v")) then
         val out =
-          getProc.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
+          Proc.get.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
         val shasum :: _ = out.split("\\s+").toList.runtimeChecked
 
         assert(
-          shasum == getFiles.contents(shaLocation),
+          shasum == Files.get.contents(shaLocation),
           s"failed to download launcher jar: $jar (shasum mismatch)"
         )
       end if
 
-      getFiles.move(tempLocation, downloadLocation)
-      getFiles.removeFile(shaLocation)
+      Files.get.move(tempLocation, downloadLocation)
+      Files.get.removeFile(shaLocation)
 
       downloadLocation
     end if
   end bootstrap
 
   private def jarUrl(launcherVersion: String)(using Env): String =
-    val repoBase = getEnv.variables
+    val repoBase = Env.get.variables
       .get("SBT_LAUNCH_REPO")
       .map(_.trim)
       .getOrElse("https://repo1.maven.org/maven2")
