@@ -17,7 +17,9 @@ object BootstrapSbtn:
       url: String
   )
 
-  def archiveUrl(launcherVersion: String)(using Context): SbtnUrl throws Err =
+  def archiveUrl(
+      launcherVersion: String
+  )(using Context, CanThrow[Err]): SbtnUrl =
     def url(qualifier: String, ext: String) =
       s"https://github.com/sbt/sbtn-dist/releases/download/v$launcherVersion/sbtn-$qualifier-${launcherVersion}.$ext"
 
@@ -42,8 +44,9 @@ object BootstrapSbtn:
       Network,
       Files,
       Logger,
-      Env
-  ): Path throws (Err | Network.Err) =
+      Env,
+      CanThrow[Err | Network.Err]
+  ): Path =
     val archive = archiveUrl(sbtnVersion)
 
     val downloadLocation =

@@ -10,8 +10,9 @@ import language.experimental.saferExceptions
 
 class CurlNetwork private (inst: Ptr[CURL]) extends Network:
   override def downloadFile(url: String, path: Path)(using
-      Logger
-  ): Unit throws Network.Err =
+      Logger,
+      CanThrow[Network.Err]
+  ): Unit =
     Zone:
       Logger.info(s"Downloading [$url] to [$path]")
       val cPath = toCString(path.toAbsolutePath().toString())

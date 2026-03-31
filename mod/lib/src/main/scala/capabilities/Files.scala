@@ -2,7 +2,7 @@ package sabotage.lib
 
 import java.nio.file.Path
 
-trait Files:
+trait Files extends caps.SharedCapability:
   def isDir(path: Path): Boolean
   def isFile(path: Path): Boolean
   def move(from: Path, to: Path): Unit

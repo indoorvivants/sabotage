@@ -2,7 +2,7 @@ package sabotage.lib
 
 import java.nio.file.Path
 
-trait Env:
+trait Env extends caps.SharedCapability:
   def variables: Map[String, String]
   def userHome: Path
 

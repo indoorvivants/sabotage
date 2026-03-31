@@ -27,7 +27,6 @@ object ExtractTar:
       transferred
     end transferN
 
-    // var fos = Option.empty[FileOutputStream]
     boundary:
       def readN(in: InputStream, n: Int) =
         val bytes = new Array[Byte](n)

@@ -4,10 +4,11 @@ import java.nio.file.Path
 
 import language.experimental.saferExceptions
 
-trait Network:
+trait Network extends caps.SharedCapability:
   def downloadFile(url: String, path: Path)(using
-      Logger
-  ): Unit throws Network.Err
+      Logger,
+      CanThrow[Network.Err]
+  ): Unit
 
 object Network extends CapabilityCompanion[Network]:
   case class Err(msg: String, cause: Throwable | Null = null)

@@ -33,9 +33,9 @@ case class JvmIndex(data: JvmIndex.Data):
 end JvmIndex
 
 object JvmIndex:
-
   case class Err(msg: String, cause: Throwable | Null = null)
       extends Exception(msg, cause)
+
   type OS = String
   type Arch = String
   type Vendor = String

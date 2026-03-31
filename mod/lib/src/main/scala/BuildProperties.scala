@@ -36,6 +36,11 @@ case class BuildProperties(
 end BuildProperties
 
 object BuildProperties:
+  def default(using Context) = BuildProperties(
+    sbtVersion = Context.defaults.sbtVersion,
+    sbtnVersion = Context.defaults.sbtnVersion
+  )
+
   def read(contents: String)(using Context) =
     import java.util.Properties
 

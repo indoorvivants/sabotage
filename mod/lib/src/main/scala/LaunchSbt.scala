@@ -26,7 +26,8 @@ object LaunchSbt:
       )
       val argsP = encode(sbtnLocation.toString() +: arguments)
 
-      unistd.environ = envP
+      if !scalanative.meta.LinktimeInfo.isWindows then unistd.environ = envP
+
       val error = unistd.execve(toCString(sbtnLocation.toString()), argsP, envP)
       if error == -1 then Logger.error(s"execve failed with ${errno.errno}")
   end launchNativeClient

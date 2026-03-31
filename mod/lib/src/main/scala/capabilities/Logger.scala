@@ -1,6 +1,6 @@
 package sabotage.lib
 
-trait Logger:
+trait Logger extends caps.SharedCapability:
   def info(msg: String): Unit
   def warn(msg: String): Unit
   def error(msg: String): Unit

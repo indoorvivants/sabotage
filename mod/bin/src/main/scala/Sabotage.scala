@@ -15,11 +15,13 @@ import language.experimental.saferExceptions
           println(Usage)
           sys.exit(0)
 
+        CheckWorkingDirectory.check(args)
+
         val propertiesLocation =
           Files.get.pwd.resolve("project/build.properties")
 
         val properties =
-          BuildProperties.read(Files.get.contents(propertiesLocation))
+          ReadBuildProperties.read(propertiesLocation)
 
         val sbtVersion = args.sbtVersion.getOrElse(properties.sbtVersion)
 
@@ -45,5 +47,7 @@ import language.experimental.saferExceptions
           Logger.error(s"(parsing arguments) ${n.msg}")
         case n: JvmIndex.Err =>
           Logger.error(s"(jvm index) ${n.msg}")
+        case _: CheckWorkingDirectory.NoSbtBuildError.type =>
+          System.err.println(EmptyFolderMessage)
         case other => throw other
 end hello

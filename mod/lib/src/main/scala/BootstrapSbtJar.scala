@@ -21,7 +21,7 @@ object BootstrapSbtJar:
         s".cache/sbt/boot/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
       )
 
-    java.nio.file.Files.createDirectories(downloadLocation.getParent())
+    Files.get.createDirectories(downloadLocation.getParent())
 
     if Files.get.isFile(downloadLocation) then downloadLocation
     else

@@ -64,12 +64,12 @@ object RealWorld:
 
         io.Source
           .fromInputStream(proces.getErrorStream())
-          .getLines
+          .getLines()
           .foreach(logger.err(_))
 
         io.Source
           .fromInputStream(proces.getInputStream())
-          .getLines
+          .getLines()
           .foreach(logger.out(_))
 
         val exitCode = proces.waitFor()

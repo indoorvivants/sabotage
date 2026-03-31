@@ -121,7 +121,7 @@ object ReadLauncherArgs:
 
     args.copy(
       pass = pass.result(),
-      javaOpts = javaOpts.result,
+      javaOpts = javaOpts.result(),
       sbtOpts = sbtOpts.result()
     )
   end read
