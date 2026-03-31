@@ -21,10 +21,9 @@ object BootstrapSbtJar:
         s".cache/sbt/boot/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
       )
 
-    Files.get.createDirectories(downloadLocation.getParent())
-
     if Files.get.isFile(downloadLocation) then downloadLocation
     else
+      Files.get.createDirectories(downloadLocation.getParent())
       val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
       Logger.info(
