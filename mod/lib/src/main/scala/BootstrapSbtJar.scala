@@ -11,7 +11,7 @@ object BootstrapSbtJar:
       Network,
       Files,
       Proc,
-      Logger,
+      Log,
       Env
   ): Path throws (Network.Err) =
     val jar = jarUrl(launcherVersion)
@@ -24,30 +24,36 @@ object BootstrapSbtJar:
     if Files.get.isFile(downloadLocation) then downloadLocation
     else
       Files.get.createDirectories(downloadLocation.getParent())
-      val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
-      val tempLocation = Paths.get(downloadLocation.toString + ".temp")
-      Logger.info(
-        s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]"
-      )
-      Network.get.downloadFile(jar, tempLocation)
-      Network.get.downloadFile(sha, shaLocation)
-
-      IMPROVE("Avoid shelling out to shasum")
-      if Proc.get.cmdOk(Seq("shasum", "-v")) then
-        val out =
-          Proc.get.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
-        val shasum :: _ = out.split("\\s+").toList.runtimeChecked
-
-        assert(
-          shasum == Files.get.contents(shaLocation),
-          s"failed to download launcher jar: $jar (shasum mismatch)"
+      val cleanup = List.newBuilder[Path]
+      try
+        val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
+        val tempLocation = Paths.get(downloadLocation.toString + ".temp")
+        Log.info(
+          s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]"
         )
-      end if
+        Network.get.downloadFile(jar, tempLocation)
+        cleanup += tempLocation
 
-      Files.get.move(tempLocation, downloadLocation)
-      Files.get.removeFile(shaLocation)
+        Network.get.downloadFile(sha, shaLocation)
+        cleanup += shaLocation
 
-      downloadLocation
+        IMPROVE("Avoid shelling out to shasum")
+        if Proc.get.cmdOk(Seq("shasum", "-v")) then
+          val out =
+            Proc.get.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
+          val shasum :: _ = out.split("\\s+").toList.runtimeChecked
+
+          assert(
+            shasum == Files.get.contents(shaLocation),
+            s"failed to download launcher jar: $jar (shasum mismatch)"
+          )
+        end if
+
+        Files.get.move(tempLocation, downloadLocation)
+        downloadLocation
+      finally cleanup.result().foreach(Files.get.removeFile)
+      end try
+
     end if
   end bootstrap
 

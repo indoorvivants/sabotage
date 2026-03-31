@@ -43,7 +43,7 @@ object BootstrapSbtn:
       Context,
       Network,
       Files,
-      Logger,
+      Log,
       Env,
       CanThrow[Err | Network.Err]
   ): Path =
@@ -54,12 +54,12 @@ object BootstrapSbtn:
         s".cache/sbt/boot/sbtn/$sbtnVersion/${archive.name}"
       )
 
-    Logger.info(s"sbtn location $downloadLocation")
+    Log.info(s"sbtn location $downloadLocation")
 
     if Files.get.isFile(downloadLocation) then downloadLocation
     else
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
-      Logger.info(
+      Log.info(
         s"downloading sbtn $sbtnVersion from [${archive.url}] to [$tempLocation]"
       )
       val extractedPath = downloadLocation.getParent()
@@ -70,7 +70,7 @@ object BootstrapSbtn:
 
       archive.archive match
         case "tar.gz" =>
-          Logger.info(s"Extracting $tempLocation into $extractedPath")
+          Log.info(s"Extracting $tempLocation into $extractedPath")
           ExtractTar.extract(
             PatchedGZIPInputStream(FileInputStream(tempLocation.toFile)),
             extractedPath

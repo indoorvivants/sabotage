@@ -10,8 +10,8 @@ object LaunchSbt:
       jdkHome: Path,
       sbtnLocation: Path,
       arguments: Seq[String]
-  )(using Env, Logger, Proc, CanThrow[Err]) =
-    Logger.info(
+  )(using Env, Log, Proc, CanThrow[Err]) =
+    Log.info(
       s"Launching SBT native client [$sbtnLocation] using jdkHome [$jdkHome] and arguments [${arguments.mkString(" ")}]"
     )
 
@@ -30,10 +30,10 @@ object LaunchSbt:
   def launchJar(jdkHome: Path, jarLocation: Path, arguments: Seq[String])(using
       Env,
       Proc,
-      Logger,
+      Log,
       CanThrow[Err]
   ): Unit =
-    Logger.info(
+    Log.info(
       s"Launching SBT jar [$jarLocation] using jdkHome [$jdkHome] and arguments [${arguments.mkString(" ")}]"
     )
     val java = jdkHome.resolve("bin/java")

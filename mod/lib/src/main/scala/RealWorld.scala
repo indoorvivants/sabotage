@@ -10,8 +10,8 @@ import scala.scalanative.posix.unistd
 import scalanative.unsafe.*
 
 object RealWorld:
-  def use(f: (Logger, Env, Files, Context, Proc) ?=> Unit): Unit =
-    given logStderr: Logger = new Logger:
+  def use(f: (Log, Env, Files, Context, Proc) ?=> Unit): Unit =
+    given logStderr: Log = new Log:
       override def info(msg: String) =
         System.err.println("[INF] " + msg)
       override def warn(msg: String) =

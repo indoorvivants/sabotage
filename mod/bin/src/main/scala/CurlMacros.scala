@@ -14,10 +14,11 @@ private def checkImpl(expr: Expr[CURLcode])(using Quotes): Expr[CURLcode] =
 
   '{
     val code = $expr
-    assert(
-      code == CURLcode.CURLE_OK,
-      $e + "[" + fromCString(curl_easy_strerror(code)) + "]"
-    )
+    if code != CURLcode.CURLE_OK then
+      throw sabotage.lib.Network.Err(
+        $e + "[" + fromCString(curl_easy_strerror(code)) + "]"
+      )
+
     code
   }
 end checkImpl

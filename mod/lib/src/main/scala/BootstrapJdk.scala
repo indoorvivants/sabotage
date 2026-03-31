@@ -9,7 +9,7 @@ object BootstrapJdk:
       Env,
       Network,
       Files,
-      Logger,
+      Log,
       Context,
       // Can't use `throws` here because SN breaks at link time
       CanThrow[JvmIndex.Err | Network.Err | DownloadJdk.Err]

@@ -10,11 +10,11 @@ import language.experimental.saferExceptions
 
 class CurlNetwork private (inst: Ptr[CURL]) extends Network:
   override def downloadFile(url: String, path: Path)(using
-      Logger,
+      Log,
       CanThrow[Network.Err]
   ): Unit =
     Zone:
-      Logger.info(s"Downloading [$url] to [$path]")
+      Log.info(s"Downloading [$url] to [$path]")
       val cPath = toCString(path.toAbsolutePath().toString())
       val cUrl = toCString(url)
       check(curl_easy_setopt(inst, CURLoption.CURLOPT_URL, cUrl))
@@ -22,10 +22,10 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
 
       val fp = stdio.fopen(cPath, c"wb")
 
-      assert(
-        fp != null,
-        s"Failed to open path ${fromCString(cPath)} for writing"
-      )
+      if fp == null then
+        throw Network.Err(
+          s"Failed to open path ${fromCString(cPath)} for writing"
+        )
 
       val write_data_callback = CFuncPtr4.fromScalaFunction {
         (
@@ -54,9 +54,9 @@ class CurlNetwork private (inst: Ptr[CURL]) extends Network:
 end CurlNetwork
 
 object CurlNetwork:
-  def use[A](f: Network ?=> A) =
+  def use[A](f: Network ?=> A)(using CanThrow[Network.Err]) =
     val curl = curl_easy_init()
-    assert(curl != null, "Failed to initialise curl instance")
+    if curl == null then throw Network.Err("Failed to initialise curl instance")
     try
       val inst = CurlNetwork(curl)
       f(using inst)

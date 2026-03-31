@@ -6,10 +6,10 @@ import language.experimental.saferExceptions
 
 @main def hello(arguments: String*) =
   RealWorld.use:
-    CurlNetwork.use:
-      try
+    try
+      CurlNetwork.use:
         val args = ReadLauncherArgs.read(arguments)
-        Logger.info(args.toString())
+        Log.info(args.toString())
 
         if args.help then
           println(Usage)
@@ -37,20 +37,20 @@ import language.experimental.saferExceptions
           LaunchSbt.launchNativeClient(jdkHome, sbtnLocation, args.pass)
         else LaunchSbt.launchJar(jdkHome, jarLocation, args.pass)
 
-      catch
-        case n: Network.Err =>
-          Logger.error(s"(network) ${n.msg}")
-        case n: DownloadJdk.Err =>
-          Logger.error(s"(downloading jdk) ${n.msg}")
-        case n: BootstrapSbtn.Err =>
-          Logger.error(s"(downloading sbtn) ${n.msg}")
-        case n: ReadLauncherArgs.Err =>
-          Logger.error(s"(parsing arguments) ${n.msg}")
-        case n: JvmIndex.Err =>
-          Logger.error(s"(jvm index) ${n.msg}")
-        case _: CheckWorkingDirectory.NoSbtBuildError.type =>
-          System.err.println(EmptyFolderMessage)
-        case n: LaunchSbt.Err =>
-          Logger.error(s"(launching sbt) ${n.msg}")
-        case other => throw other
+    catch
+      case n: Network.Err =>
+        Log.error(s"(network) ${n.msg}")
+      case n: DownloadJdk.Err =>
+        Log.error(s"(downloading jdk) ${n.msg}")
+      case n: BootstrapSbtn.Err =>
+        Log.error(s"(downloading sbtn) ${n.msg}")
+      case n: ReadLauncherArgs.Err =>
+        Log.error(s"(parsing arguments) ${n.msg}")
+      case n: JvmIndex.Err =>
+        Log.error(s"(jvm index) ${n.msg}")
+      case _: CheckWorkingDirectory.NoSbtBuildError.type =>
+        System.err.println(EmptyFolderMessage)
+      case n: LaunchSbt.Err =>
+        Log.error(s"(launching sbt) ${n.msg}")
+      case other => throw other
 end hello

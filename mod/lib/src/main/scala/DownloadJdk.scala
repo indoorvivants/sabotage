@@ -14,7 +14,7 @@ object DownloadJdk:
   )(using
       Network,
       Files,
-      Logger,
+      Log,
       Env,
       Context,
       CanThrow[Err | Network.Err]
@@ -37,18 +37,20 @@ object DownloadJdk:
           PatchedGZIPInputStream(FileInputStream(archivePath.toFile))
         else FileInputStream(archivePath.toFile)
 
-      Logger.info(s"Extracting $archivePath into $extractedPath")
+      Log.info(s"Extracting $archivePath into $extractedPath")
       ExtractTar.extract(is, extractedPath)
       extractedPath
 
     if Files.get.isDir(extractedPath) then extractedPath
     else if Files.get.isFile(archivePath) then extract()
     else
-      Logger.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
+      Log.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
       java.nio.file.Files.createDirectories(archivePath.getParent())
-      IMPROVE("Verify checksum of downloade JDK")
-      Network.get.downloadFile(downloadUrl, archivePath)
-      extract()
+      IMPROVE("Verify checksum of downloaded JDK")
+      try
+        Network.get.downloadFile(downloadUrl, archivePath)
+        extract()
+      finally Files.get.removeFile(archivePath)
     end if
 
     val failedToResolveHome = Err(

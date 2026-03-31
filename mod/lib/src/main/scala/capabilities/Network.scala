@@ -6,7 +6,7 @@ import language.experimental.saferExceptions
 
 trait Network extends caps.SharedCapability:
   def downloadFile(url: String, path: Path)(using
-      Logger,
+      Log,
       CanThrow[Network.Err]
   ): Unit
 
