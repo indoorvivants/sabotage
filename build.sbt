@@ -1,3 +1,4 @@
+import scala.scalanative.build.LTO
 import scala.scalanative.build.SourceLevelDebuggingConfig
 import com.indoorvivants.detective.Platform
 import bindgen.interface.Binding
