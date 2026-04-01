@@ -30,7 +30,7 @@ object BootstrapJdk:
       CanThrow[JvmIndex.Err | Network.Err | DownloadJdk.Err]
   ): Path =
     properties.jdk match
-      case None          => Files.get.resolve(Env.get.variables("JAVA_HOME"))
+      case None          => Files.resolve(Env.variables("JAVA_HOME"))
       case Some(jdkSpec) =>
         val index = DownloadJvmIndex.acquireJvmIndex(
           properties.jdkIndex.getOrElse("coursier")

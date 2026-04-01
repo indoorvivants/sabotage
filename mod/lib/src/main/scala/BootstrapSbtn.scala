@@ -37,13 +37,13 @@ object BootstrapSbtn:
     val archive = archiveUrl(sbtnVersion)
 
     val downloadLocation =
-      Env.get.userHome.resolve(
+      Env.userHome.resolve(
         s".cache/sbt/boot/sbtn/$sbtnVersion/${archive.name}"
       )
 
     Log.info(s"sbtn location $downloadLocation")
 
-    if Files.get.isFile(downloadLocation) then downloadLocation
+    if Files.isFile(downloadLocation) then downloadLocation
     else
       val tempLocation = Paths.get(downloadLocation.toString + ".temp")
       Log.info(
@@ -51,9 +51,9 @@ object BootstrapSbtn:
       )
       val extractedPath = downloadLocation.getParent()
 
-      Files.get.createDirectories(extractedPath)
+      Files.createDirectories(extractedPath)
 
-      Network.get.downloadFile(archive.url, tempLocation)
+      Network.downloadFile(archive.url, tempLocation)
 
       archive.archive match
         case "tar.gz" =>

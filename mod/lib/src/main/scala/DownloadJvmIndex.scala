@@ -14,19 +14,19 @@ object DownloadJvmIndex:
   )(using Network, Files, Log, Env, CanThrow[Network.Err]): JvmIndex =
     val url = indexUrl(jvmIndex)
     val downloadLocation =
-      Env.get.userHome.resolve(s".cache/sabotage/jvm-index/$jvmIndex.json")
+      Env.userHome.resolve(s".cache/sabotage/jvm-index/$jvmIndex.json")
 
-    if !Files.get.isFile(downloadLocation)
+    if !Files.isFile(downloadLocation)
     then
-      Files.get.createDirectories(downloadLocation.getParent())
+      Files.createDirectories(downloadLocation.getParent())
 
       IMPROVE("Handle caching somehow")
       Log.info(
         s"Downloading JVM index [$jvmIndex] from [$url] into [$downloadLocation]"
       )
-      Network.get.downloadFile(url, downloadLocation)
+      Network.downloadFile(url, downloadLocation)
 
-    val indexJson = Files.get.contents(downloadLocation)
+    val indexJson = Files.contents(downloadLocation)
 
     JvmIndex.read(indexJson)
   end acquireJvmIndex

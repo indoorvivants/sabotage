@@ -19,18 +19,19 @@ object BootstrapSbtJar:
       Files,
       Proc,
       Log,
-      Env
-  ): Path throws (Network.Err) =
+      Env,
+      CanThrow[Network.Err]
+  ): Path =
     val jar = jarUrl(launcherVersion)
     val sha = jar + ".sha1"
     val downloadLocation =
-      Env.get.userHome.resolve(
+      Env.userHome.resolve(
         s".cache/sbt/boot/sbt-launch/$launcherVersion/sbt-launch-$launcherVersion.jar"
       )
 
-    if Files.get.isFile(downloadLocation) then downloadLocation
+    if Files.isFile(downloadLocation) then downloadLocation
     else
-      Files.get.createDirectories(downloadLocation.getParent())
+      Files.createDirectories(downloadLocation.getParent())
       val cleanup = List.newBuilder[Path]
       try
         val shaLocation = Paths.get(downloadLocation.toString + ".sha1")
@@ -38,38 +39,38 @@ object BootstrapSbtJar:
         Log.info(
           s"downloading sbt launcher $launcherVersion from [$jar] to [$tempLocation]"
         )
-        Network.get.downloadFile(jar, tempLocation)
+        Network.downloadFile(jar, tempLocation)
         cleanup += tempLocation
 
-        Network.get.downloadFile(sha, shaLocation)
+        Network.downloadFile(sha, shaLocation)
         cleanup += shaLocation
 
         IMPROVE("Avoid shelling out to shasum")
-        if Proc.get.cmdOk(Seq("shasum", "-v")) then
+        if Proc.cmdOk(Seq("shasum", "-v")) then
           val out =
-            Proc.get.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
+            Proc.cmdOutput(Seq("shasum", tempLocation.toString())).trim()
           val shasum :: _ = out.split("\\s+").toList.runtimeChecked
 
           assert(
-            shasum == Files.get.contents(shaLocation),
+            shasum == Files.contents(shaLocation),
             s"failed to download launcher jar: $jar (shasum mismatch)"
           )
         end if
 
-        Files.get.move(tempLocation, downloadLocation)
+        Files.move(tempLocation, downloadLocation)
         downloadLocation
       finally
         cleanup
           .result()
-          .filter(Files.get.isFile(_))
-          .foreach(Files.get.removeFile)
+          .filter(Files.isFile(_))
+          .foreach(Files.removeFile)
       end try
 
     end if
   end bootstrapImpl
 
   private def jarUrl(launcherVersion: String)(using Env): String =
-    val repoBase = Env.get.variables
+    val repoBase = Env.variables
       .get("SBT_LAUNCH_REPO")
       .map(_.trim)
       .getOrElse("https://repo1.maven.org/maven2")

@@ -26,10 +26,10 @@ object DownloadJdk:
     val downloadPath = downloadUrl.replaceFirst(":/", "")
 
     val archivePath =
-      Env.get.userHome.resolve(s".cache/sabotage/jdk/$downloadPath.temp")
+      Env.userHome.resolve(s".cache/sabotage/jdk/$downloadPath.temp")
 
     val extractedPath =
-      Env.get.userHome.resolve(s".cache/sabotage/jdk/$downloadPath")
+      Env.userHome.resolve(s".cache/sabotage/jdk/$downloadPath")
 
     def extract() =
       val is =
@@ -41,17 +41,16 @@ object DownloadJdk:
       ExtractTar.extract(is, extractedPath)
       extractedPath
 
-    if Files.get.isDir(extractedPath) then extractedPath
-    else if Files.get.isFile(archivePath) then extract()
+    if Files.isDir(extractedPath) then extractedPath
+    else if Files.isFile(archivePath) then extract()
     else
       Log.info(s"Downloading jdk from [$downloadUrl] to [$archivePath]")
       java.nio.file.Files.createDirectories(archivePath.getParent())
       IMPROVE("Verify checksum of downloaded JDK")
       try
-        Network.get.downloadFile(downloadUrl, archivePath)
+        Network.downloadFile(downloadUrl, archivePath)
         extract()
-      finally
-        if Files.get.isFile(archivePath) then Files.get.removeFile(archivePath)
+      finally if Files.isFile(archivePath) then Files.removeFile(archivePath)
     end if
 
     val failedToResolveHome = Err(
@@ -63,14 +62,14 @@ object DownloadJdk:
       else if root.resolve("Contents/Home/bin/java").toFile().isFile() then
         Some(root.resolve("Contents/Home"))
       else
-        val children = Files.get.list(root)
+        val children = Files.list(root)
         children.iterator
           .map(findHome(_, depth - 1))
           .collectFirst:
             case Some(p) => p
 
     import Platform.OS.*
-    Context.get.platform.os match
+    Context.platform.os match
       case MacOS =>
         findHome(extractedPath, 2).getOrElse(throw failedToResolveHome)
       case Linux => extractedPath

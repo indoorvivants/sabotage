@@ -19,7 +19,7 @@ import Timings.time
         CheckWorkingDirectory.check(args)
 
         val propertiesLocation =
-          Files.get.pwd.resolve("project/build.properties")
+          Files.pwd.resolve("project/build.properties")
 
         val properties =
           ReadBuildProperties.read(propertiesLocation)
