@@ -3,7 +3,22 @@ package sabotage.lib
 import java.nio.file.Path
 
 object BootstrapJdk:
+
   def bootstrap(
+      properties: BuildProperties
+  )(using
+      Env,
+      Network,
+      Files,
+      Log,
+      Context,
+      // Can't use `throws` here because SN breaks at link time
+      CanThrow[JvmIndex.Err | Network.Err | DownloadJdk.Err]
+  ): Path =
+    Timings.time("bootstrapping JDK"):
+      bootstrapImpl(properties)
+
+  private def bootstrapImpl(
       properties: BuildProperties
   )(using
       Env,

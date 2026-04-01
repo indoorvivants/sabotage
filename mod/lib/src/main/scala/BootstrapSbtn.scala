@@ -11,33 +11,20 @@ object BootstrapSbtn:
   case class Err(msg: String, cause: Throwable | Null = null)
       extends Exception(msg, cause)
 
-  case class SbtnUrl(
-      name: "sbtn" | "sbtn.exe",
-      archive: "tar.gz" | "zip",
-      url: String
-  )
-
-  def archiveUrl(
-      launcherVersion: String
-  )(using Context, CanThrow[Err]): SbtnUrl =
-    def url(qualifier: String, ext: String) =
-      s"https://github.com/sbt/sbtn-dist/releases/download/v$launcherVersion/sbtn-$qualifier-${launcherVersion}.$ext"
-
-    Context.platform match
-      case Target(OS.Linux, Arch.Intel, Bits.x64) =>
-        SbtnUrl("sbtn", "tar.gz", url("x86_64-pc-linux", "tar.gz"))
-      case Target(OS.Linux, Arch.Arm, Bits.x64) =>
-        SbtnUrl("sbtn", "tar.gz", url("aarch64-pc-linux", "tar.gz"))
-      case Target(OS.MacOS, _, Bits.x64) =>
-        SbtnUrl("sbtn", "tar.gz", url("universal-apple-darwin", "tar.gz"))
-      case Target(OS.Windows, Arch.Intel, Bits.x64) =>
-        SbtnUrl("sbtn.exe", "zip", url("x86_64-pc-win32", "zip"))
-      case other =>
-        throw Err(s"sbtn is not available for target [$other]")
-    end match
-  end archiveUrl
-
   def bootstrap(
+      sbtnVersion: String
+  )(using
+      Context,
+      Network,
+      Files,
+      Log,
+      Env,
+      CanThrow[Err | Network.Err]
+  ): Path =
+    Timings.time("bootstrapping sbtn"):
+      bootstrapImpl(sbtnVersion)
+
+  private def bootstrapImpl(
       sbtnVersion: String
   )(using
       Context,
@@ -79,5 +66,32 @@ object BootstrapSbtn:
 
       downloadLocation
     end if
-  end bootstrap
+  end bootstrapImpl
+
+  private case class SbtnUrl(
+      name: "sbtn" | "sbtn.exe",
+      archive: "tar.gz" | "zip",
+      url: String
+  )
+
+  private def archiveUrl(
+      launcherVersion: String
+  )(using Context, CanThrow[Err]): SbtnUrl =
+    def url(qualifier: String, ext: String) =
+      s"https://github.com/sbt/sbtn-dist/releases/download/v$launcherVersion/sbtn-$qualifier-${launcherVersion}.$ext"
+
+    Context.platform match
+      case Target(OS.Linux, Arch.Intel, Bits.x64) =>
+        SbtnUrl("sbtn", "tar.gz", url("x86_64-pc-linux", "tar.gz"))
+      case Target(OS.Linux, Arch.Arm, Bits.x64) =>
+        SbtnUrl("sbtn", "tar.gz", url("aarch64-pc-linux", "tar.gz"))
+      case Target(OS.MacOS, _, Bits.x64) =>
+        SbtnUrl("sbtn", "tar.gz", url("universal-apple-darwin", "tar.gz"))
+      case Target(OS.Windows, Arch.Intel, Bits.x64) =>
+        SbtnUrl("sbtn.exe", "zip", url("x86_64-pc-win32", "zip"))
+      case other =>
+        throw Err(s"sbtn is not available for target [$other]")
+    end match
+  end archiveUrl
+
 end BootstrapSbtn

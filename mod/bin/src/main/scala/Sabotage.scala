@@ -3,6 +3,7 @@ package sabotage.bin
 import sabotage.lib.*
 
 import language.experimental.saferExceptions
+import Timings.time
 
 @main def hello(arguments: String*) =
   RealWorld.use:

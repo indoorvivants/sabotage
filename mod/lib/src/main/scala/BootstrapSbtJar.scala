@@ -5,7 +5,14 @@ import java.nio.file.{Path, Paths}
 import language.experimental.saferExceptions
 
 object BootstrapSbtJar:
+
   def bootstrap(
+      launcherVersion: String
+  )(using Network, Files, Proc, Log, Env): Path throws (Network.Err) =
+    Timings.time("bootstrapping sbt jar"):
+      bootstrapImpl(launcherVersion)
+
+  private def bootstrapImpl(
       launcherVersion: String
   )(using
       Network,
@@ -51,11 +58,15 @@ object BootstrapSbtJar:
 
         Files.get.move(tempLocation, downloadLocation)
         downloadLocation
-      finally cleanup.result().foreach(Files.get.removeFile)
+      finally
+        cleanup
+          .result()
+          .filter(Files.get.isFile(_))
+          .foreach(Files.get.removeFile)
       end try
 
     end if
-  end bootstrap
+  end bootstrapImpl
 
   private def jarUrl(launcherVersion: String)(using Env): String =
     val repoBase = Env.get.variables

@@ -7,6 +7,7 @@ object DownloadJvmIndex:
     jvmIndex.trim.toLowerCase() match
       case "coursier" =>
         "https://raw.githubusercontent.com/coursier/jvm-index/master/index.json"
+      case _ => TODO("unsupported JVM index")
 
   def acquireJvmIndex(
       jvmIndex: String

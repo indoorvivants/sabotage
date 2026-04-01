@@ -50,7 +50,8 @@ object DownloadJdk:
       try
         Network.get.downloadFile(downloadUrl, archivePath)
         extract()
-      finally Files.get.removeFile(archivePath)
+      finally
+        if Files.get.isFile(archivePath) then Files.get.removeFile(archivePath)
     end if
 
     val failedToResolveHome = Err(
